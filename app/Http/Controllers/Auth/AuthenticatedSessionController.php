@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\App;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -17,6 +18,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
+        // Récupérer la locale de la session ou utiliser celle par défaut
+        $locale = session('locale', config('app.fallback_locale'));
+        App::setLocale($locale);
+        
         return view('auth.login');
     }
 
@@ -28,8 +33,14 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-
-        return redirect()->intended(RouteServiceProvider::HOME);
+        
+        // Récupérer la locale de la session
+        $locale = session('locale', config('app.fallback_locale'));
+        
+        // Rediriger vers la page d'accueil avec le préfixe de langue
+        return redirect()->intended($locale === config('app.fallback_locale') 
+            ? route('home', ['locale' => $locale]) 
+            : route('home', ['locale' => $locale]));
     }
 
     /**
@@ -37,12 +48,16 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Récupérer la locale de la session avant de la détruire
+        $locale = session('locale', config('app.fallback_locale'));
+        
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Rediriger vers la page d'accueil avec le préfixe de langue
+        return redirect(route('home', ['locale' => $locale]));
     }
 }

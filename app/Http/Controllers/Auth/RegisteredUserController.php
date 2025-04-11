@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\App;
 
 class RegisteredUserController extends Controller
 {
@@ -20,6 +21,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
+        // Récupérer la locale de la session ou utiliser celle par défaut
+        $locale = session('locale', config('app.fallback_locale'));
+        App::setLocale($locale);
+        
         return view('auth.register');
     }
 
@@ -52,6 +57,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        // Récupérer la locale de la session
+        $locale = session('locale', config('app.fallback_locale'));
+        
+        // Rediriger vers la page d'accueil avec le préfixe de langue
+        return redirect(route('home', ['locale' => $locale]));
     }
 }

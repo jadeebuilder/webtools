@@ -6,6 +6,7 @@ use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 
 class RedirectIfAuthenticated
@@ -21,7 +22,16 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                // Récupère la locale depuis l'URL (paramètre de route)
+                $locale = $request->route('locale');
+                
+                // Si la locale n'est pas définie, utiliser la locale par défaut
+                if (!$locale) {
+                    $locale = App::getLocale();
+                }
+                
+                // Construire l'URL complète avec le préfixe de langue
+                return redirect('/' . $locale . RouteServiceProvider::HOME);
             }
         }
 

@@ -22,7 +22,7 @@
                                     document.querySelectorAll('.tool-category').forEach((card, index) => {
                                         setTimeout(() => {
                                             card.classList.add('show');
-                                        }, index * 100);
+                                        }, index * 50);
                                     });
                                 }, 100);
                             },
@@ -35,8 +35,7 @@
                                 }, 300);
                             }
                         }"
-                         class="relative inline-block"
-                         @mouseleave="hideMenu()"
+                         class="static"
                          @keydown.escape.window="hideMenu()">
 
                         <button @mouseenter="showMenu()"
@@ -57,14 +56,15 @@
                         <div x-show="toolsMenu"
                              x-cloak
                              @mouseenter="showMenu()"
+                             @mouseleave="hideMenu()"
                              class="mega-menu"
                              x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 transform -translate-y-4"
-                             x-transition:enter-end="opacity-100 transform translate-y-0"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100"
                              x-transition:leave="transition ease-in duration-150"
-                             x-transition:leave-start="opacity-100 transform translate-y-0"
-                             x-transition:leave-end="opacity-0 transform -translate-y-4">
-                            <div class="p-6">
+                             x-transition:leave-start="opacity-100"
+                             x-transition:leave-end="opacity-0">
+                            <div class="mega-menu-content py-6 relative">
                                 <!-- Close button -->
                                 <button @click="hideMenu()"
                                         class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 focus:outline-none"
@@ -184,11 +184,11 @@
             <div class="hidden sm:flex sm:items-center">
                 @guest
                     <div class="auth-buttons flex items-center space-x-3">
-                        <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-purple-700 transition duration-300 ease-in-out transform hover:scale-105">
+                        <a href="{{ route('login', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-purple-700 transition duration-300 ease-in-out transform hover:scale-105">
                             <i class="fas fa-sign-in-alt mr-2 text-purple-500"></i>
                             {{ __('Login') }}
                         </a>
-                        <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 rounded-md hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                        <a href="{{ route('register', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 rounded-md hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
                             <i class="fas fa-user-plus mr-2"></i>
                             {{ __('Register') }}
                         </a>
@@ -300,13 +300,13 @@
         @guest
             <div class="pt-4 pb-1 border-t border-gray-200">
                 <div class="flex items-center px-4 py-2">
-                    <a href="{{ route('login') }}" class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-purple-700">
+                    <a href="{{ route('login', ['locale' => app()->getLocale()]) }}" class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-purple-700">
                         <i class="fas fa-sign-in-alt mr-2 text-purple-500"></i>
                         {{ __('Login') }}
                     </a>
                 </div>
                 <div class="flex items-center px-4 py-2">
-                    <a href="{{ route('register') }}" class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 rounded-md hover:from-purple-600 hover:to-indigo-700">
+                    <a href="{{ route('register', ['locale' => app()->getLocale()]) }}" class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 rounded-md hover:from-purple-600 hover:to-indigo-700">
                         <i class="fas fa-user-plus mr-2"></i>
                         {{ __('Register') }}
                     </a>

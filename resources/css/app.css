@@ -1,51 +1,71 @@
+@import 'phone-input.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Mega Menu */
 .mega-menu {
-    @apply fixed top-16 left-1/2 w-[90vw] max-w-7xl bg-white shadow-xl rounded-xl py-6 z-50;
+    @apply absolute z-50 bg-white shadow-2xl border border-gray-200 rounded-xl overflow-hidden;
+    top: 64px; /* Position juste en dessous de la barre de navigation */
+    left: 50%;
     transform: translateX(-50%);
+    width: 100%;
+    max-width: 1280px; /* Correspond à la largeur max-w-7xl de Tailwind */
+    max-height: 80vh; /* Limite la hauteur à 80% de la hauteur de la fenêtre */
+    overflow-y: auto; /* Permet le défilement vertical seulement si nécessaire */
 }
 
-.mega-menu::before {
+.mega-menu::after {
     content: '';
-    @apply absolute -top-2 left-1/2 w-4 h-4 bg-white rotate-45 -translate-x-1/2;
-    border-left: 1px solid theme('colors.gray.200');
-    border-top: 1px solid theme('colors.gray.200');
+    height: 20px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mega-menu.scrollable::after {
+    opacity: 1;
+}
+
+.mega-menu-content {
+    @apply px-4 sm:px-6 lg:px-8 py-8;
 }
 
 /* Tool Cards */
 .tool-category {
-    @apply block p-4 rounded-xl transition-all duration-300;
-    transform: translateY(20px);
+    @apply bg-white rounded-lg shadow-sm hover:shadow-md p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 border border-gray-100 block;
     opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .tool-category.show {
-    transform: translateY(0);
     opacity: 1;
-}
-
-.tool-category:hover {
-    @apply bg-gray-50;
-    transform: translateY(-2px);
+    transform: translateY(0);
 }
 
 .tool-icon-wrapper {
-    @apply flex items-center justify-center h-16 w-16 rounded-xl bg-gray-100 mb-3 mx-auto transition-all duration-300;
+    @apply mb-4 flex justify-center items-center w-16 h-16 rounded-full bg-gray-100 mx-auto;
+    transition: background-color 0.3s ease;
 }
 
 .tool-category:hover .tool-icon-wrapper {
-    @apply scale-110;
+    @apply bg-gray-200;
 }
 
 .tool-title {
-    @apply text-lg font-medium text-gray-900 mb-2 text-center transition-colors duration-300;
+    @apply text-base font-medium text-gray-900 text-center;
+    transition: color 0.3s ease;
 }
 
 .tool-description {
-    @apply text-sm text-gray-500 text-center leading-relaxed;
+    @apply mt-2 text-sm text-gray-500 text-center;
 }
 
 [x-cloak] {
@@ -62,15 +82,30 @@
 .tool-category:nth-child(7) { transition-delay: 700ms; }
 .tool-category:nth-child(8) { transition-delay: 800ms; }
 
+/* Hide scrollbar */
+.mega-menu {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.mega-menu::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
     .mega-menu {
-        @apply fixed top-16 left-0 w-full max-w-full rounded-none;
+        @apply absolute left-0 right-0 rounded-b-xl rounded-t-none border-t-0;
+        top: 64px;
+        width: calc(100% - 2rem);
+        max-width: none;
+        margin: 0 1rem;
         transform: none;
+        max-height: 70vh; /* Limite la hauteur sur mobiles */
     }
-
-    .mega-menu::before {
-        @apply hidden;
+    
+    .mega-menu-content {
+        @apply py-4 px-3;
     }
 
     .tool-category {

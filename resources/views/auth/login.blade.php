@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-auth-layout>
     <div class="mb-6 text-center">
         <h1 class="text-2xl font-bold text-gray-900">{{ __('Log in to WebTools') }}</h1>
         <p class="mt-2 text-sm text-gray-600">{{ __('Access all your favorite tools in one place') }}</p>
@@ -7,7 +7,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login', ['locale' => app()->getLocale()]) }}">
         @csrf
 
         <!-- Email Address -->
@@ -45,7 +45,7 @@
             </label>
             
             @if (Route::has('password.request'))
-                <a class="text-sm text-gray-600 hover:text-purple-500 transition duration-150" href="{{ route('password.request') }}">
+                <a class="text-sm text-gray-600 hover:text-purple-500 transition duration-150" href="{{ route('password.request', ['locale' => app()->getLocale()]) }}">
                     {{ __('Forgot password?') }}
                 </a>
             @endif
@@ -59,9 +59,9 @@
         
         <div class="mt-6 text-center text-sm">
             {{ __("Don't have an account?") }}
-            <a href="{{ route('register') }}" class="text-purple-500 hover:text-purple-700 font-medium">
+            <a href="{{ route('register', ['locale' => app()->getLocale()]) }}" class="text-purple-500 hover:text-purple-700 font-medium">
                 {{ __('Register now') }}
             </a>
         </div>
     </form>
-</x-guest-layout>
+</x-auth-layout>

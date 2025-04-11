@@ -1,10 +1,10 @@
-<x-guest-layout>
+<x-auth-layout>
     <div class="mb-6 text-center">
         <h1 class="text-2xl font-bold text-gray-900">{{ __('Create your WebTools account') }}</h1>
         <p class="mt-2 text-sm text-gray-600">{{ __('Join thousands of users who use our tools daily') }}</p>
     </div>
     
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register', ['locale' => app()->getLocale()]) }}">
         @csrf
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -26,12 +26,8 @@
         <!-- Phone -->
         <div class="mt-4">
             <x-input-label for="phone" :value="__('Phone Number')" />
-            <div class="flex">
-                <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md">
-                    <i class="fas fa-phone text-gray-500"></i>
-                </span>
-                <x-text-input id="phone" class="block mt-0 w-full rounded-none rounded-e-md" type="tel" name="phone" :value="old('phone')" required />
-            </div>
+            <x-phone-input id="phone" class="block w-full" type="tel" name="phone" :value="old('phone')" required />
+            <div id="phone-error" class="mt-1 text-sm text-red-600 hidden"></div>
             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
 
@@ -85,7 +81,7 @@
         </div>
 
         <div class="flex items-center justify-between mt-6">
-            <a class="text-sm text-gray-600 hover:text-purple-500 transition duration-150" href="{{ route('login') }}">
+            <a class="text-sm text-gray-600 hover:text-purple-500 transition duration-150" href="{{ route('login', ['locale' => app()->getLocale()]) }}">
                 {{ __('Already registered?') }}
             </a>
 
@@ -101,5 +97,5 @@
             <a href="#" class="text-purple-500 hover:text-purple-700">{{ __('Privacy Policy') }}</a>
         </div>
     </form>
-</x-guest-layout>
+</x-auth-layout>
 

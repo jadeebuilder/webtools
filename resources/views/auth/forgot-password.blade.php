@@ -6,7 +6,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email', ['locale' => app()->getLocale()]) }}">
         @csrf
 
         <!-- Email Address -->
@@ -16,7 +16,11 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="flex items-center justify-between mt-4">
+            <a href="{{ route('login', ['locale' => app()->getLocale()]) }}" class="text-sm text-gray-600 hover:text-purple-500">
+                {{ __('Back to login') }}
+            </a>
+            
             <x-primary-button>
                 {{ __('Email Password Reset Link') }}
             </x-primary-button>
