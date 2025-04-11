@@ -1,0 +1,204 @@
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+    <!-- Primary Navigation Menu -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex">
+                <!-- Logo -->
+                <div class="shrink-0 flex items-center">
+                    <a href="{{ URL::localizedRoute('home') }}" class="text-xl font-bold text-gray-800">
+                        {{ __('WebTools') }}
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden sm:flex sm:items-center sm:ms-6">
+                    <div x-data="{
+                            toolsMenu: false,
+                            closeTimer: null,
+                            showMenu() {
+                                if (this.closeTimer) clearTimeout(this.closeTimer);
+                                this.toolsMenu = true;
+                                setTimeout(() => {
+                                    document.querySelectorAll('.tool-category').forEach((card, index) => {
+                                        setTimeout(() => {
+                                            card.classList.add('show');
+                                        }, index * 100);
+                                    });
+                                }, 100);
+                            },
+                            hideMenu() {
+                                document.querySelectorAll('.tool-category').forEach(card => {
+                                    card.classList.remove('show');
+                                });
+                                this.closeTimer = setTimeout(() => {
+                                    this.toolsMenu = false;
+                                }, 300);
+                            }
+                        }"
+                         class="relative inline-block"
+                         @mouseleave="hideMenu()"
+                         @keydown.escape.window="hideMenu()">
+
+                        <button @mouseenter="showMenu()"
+                                @click="toolsMenu = !toolsMenu"
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                            <div class="flex items-center">
+                                <i class="fas fa-tools mr-2"></i>
+                                {{ __('Tools') }}
+                            </div>
+                            <div class="ms-1">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </button>
+
+                        <!-- Mega Menu -->
+                        <div x-show="toolsMenu"
+                             x-cloak
+                             @mouseenter="showMenu()"
+                             class="mega-menu"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 transform -translate-y-4"
+                             x-transition:enter-end="opacity-100 transform translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 transform translate-y-0"
+                             x-transition:leave-end="opacity-0 transform -translate-y-4">
+                            <div class="p-6">
+                                <!-- Close button -->
+                                <button @click="hideMenu()"
+                                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 focus:outline-none"
+                                        aria-label="{{ __('Close menu') }}">
+                                    <span class="sr-only">{{ __('Close menu') }}</span>
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+
+                                <!-- Grid -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                    <!-- Checker Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.checker') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-check-circle text-3xl text-purple-500 group-hover:text-purple-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Checker Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Validate and verify different types of data') }}</p>
+                                    </a>
+
+                                    <!-- Text Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.text') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-font text-3xl text-purple-500 group-hover:text-purple-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Text Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Manipulate and transform your text') }}</p>
+                                    </a>
+
+                                    <!-- Converter Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.converter') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-exchange-alt text-3xl text-green-500 group-hover:text-green-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Converter Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Convert different data formats') }}</p>
+                                    </a>
+
+                                    <!-- Generator Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.generator') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-magic text-3xl text-blue-500 group-hover:text-blue-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Generator Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Generate different types of content') }}</p>
+                                    </a>
+
+                                    <!-- Developer Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.developer') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-code text-3xl text-indigo-500 group-hover:text-indigo-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Developer Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Essential tools for developers') }}</p>
+                                    </a>
+
+                                    <!-- Image Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.image') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-image text-3xl text-orange-500 group-hover:text-orange-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Image Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Manipulate and optimize your images') }}</p>
+                                    </a>
+
+                                    <!-- Unit Converter -->
+                                    <a href="{{ URL::localizedRoute('tools.unit') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-ruler text-3xl text-pink-500 group-hover:text-pink-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Unit Converter') }}</h3>
+                                        <p class="tool-description">{{ __('Convert different units of measurement') }}</p>
+                                    </a>
+
+                                    <!-- Time Converter -->
+                                    <a href="{{ URL::localizedRoute('tools.time') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-clock text-3xl text-teal-500 group-hover:text-teal-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Time Converter') }}</h3>
+                                        <p class="tool-description">{{ __('Convert and calculate time') }}</p>
+                                    </a>
+
+                                    <!-- Data Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.data') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-database text-3xl text-yellow-500 group-hover:text-yellow-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Data Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Manipulate and analyze your data') }}</p>
+                                    </a>
+
+                                    <!-- Color Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.color') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-palette text-3xl text-red-500 group-hover:text-red-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Color Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Manage and convert colors') }}</p>
+                                    </a>
+
+                                    <!-- Misc Tools -->
+                                    <a href="{{ URL::localizedRoute('tools.misc') }}" class="tool-category">
+                                        <div class="tool-icon-wrapper">
+                                            <i class="fas fa-ellipsis-h text-3xl text-gray-500 group-hover:text-gray-600"></i>
+                                        </div>
+                                        <h3 class="tool-title">{{ __('Misc Tools') }}</h3>
+                                        <p class="tool-description">{{ __('Other useful tools') }}</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hamburger -->
+            <div class="-me-2 flex items-center sm:hidden">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Navigation Menu -->
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="URL::localizedRoute('tools.index')" :active="request()->routeIs('tools.index')" class="flex items-center">
+                <i class="fas fa-tools mr-2"></i>
+                {{ __('All Tools') }}
+            </x-responsive-nav-link>
+        </div>
+    </div>
+</nav>

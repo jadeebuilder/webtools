@@ -1,0 +1,238 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+DNS Lookup tool
+IP Lookup tool
+Reverse IP Lookup tool
+SSL Lookup tool
+Whois Lookup tool
+Ping tool
+HTTP headers lookup tool
+Safe URL checker tool
+Google cache checker tool
+URL redirect checker tool
+Password strength checker tool
+Meta tags checker tool
+Website hosting checker tool
+File mime type checker tool
+Gravatar checker tool
+Text separator tool
+Email extractor tool
+URL extractor tool
+Text size calculator tool
+Duplicate lines remover tool
+Text to speech tool
+IDN Punnycode converter tool
+Case converter tool
+Character counter tool
+List randomizer tool
+Reverse words tool
+Reverse letters tool
+Emojis remover tool
+Reverse list tool
+List alphabetizer tool
+Upside down text generator tool
+Old English text generator tool
+Cursive text generator tool
+Base64 encoder tool
+Base64 decoder tool
+Base64 to Image tool
+Image to Base64 tool
+URL encoder tool
+URL decoder tool
+Color converter tool
+Binary converter tool
+Hex converter tool
+Ascii converter tool
+Decimal converter tool
+Octal converter tool
+Morse converter tool
+Number to words converter tool
+PayPal link generator tool
+Signature generator tool
+Mailto link generator tool
+UTM link generator tool
+WhatsApp link generator tool
+YouTube Timestamp link generator tool
+Slug generator tool
+Lorem Ipsum generator tool
+Password generator tool
+Random number generator tool
+UUID v4 generator tool
+Bcrypt generator tool
+MD2 generator tool
+MD4 generator tool
+MD5 generator tool
+Whirlpool generator tool
+SHA-1 generator tool
+SHA-224 generator tool
+SHA-256 generator tool
+SHA-384 generator tool
+SHA-512 generator tool
+SHA-512/224 generator tool
+SHA-512/256 generator tool
+SHA-3/224 generator tool
+SHA-3/256 generator tool
+SHA-3/384 generator tool
+SHA-3/512 generator tool
+HTML minifier tool
+CSS minifier tool
+JS minifier tool
+JSON validator & beautifier tool
+SQL formatter/beautifier tool
+HTML entity converter tool
+BBCode to HTML tool
+Markdown to HTML tool
+HTML tags remover tool
+User agent parser tool
+URL parser tool
+PNG to JPG tool
+PNG to WEBP tool
+PNG to BMP tool
+PNG to GIF tool
+PNG to ICO tool
+JPG to PNG tool
+JPG to WEBP tool
+JPG to GIF tool
+JPG to ICO tool
+JPG to BMP tool
+WEBP to JPG tool
+WEBP to GIF tool
+WEBP to PNG tool
+WEBP to BMP tool
+WEBP to ICO tool
+BMP to JPG tool
+BMP to GIF tool
+BMP to PNG tool
+BMP to WEBP tool
+BMP to ICO tool
+ICO to JPG tool
+ICO to GIF tool
+ICO to PNG tool
+ICO to WEBP tool
+ICO to BMP tool
+GIF to JPG tool
+GIF to ICO tool
+GIF to PNG tool
+GIF to WEBP tool
+GIF to BMP tool
+HEIC to PNG tool
+HEIC to GIF tool
+HEIC to JPG tool
+YouTube thumbnail downloader tool
+Image optimizer tool
+QR code reader tool
+Exif reader tool
+Color picker tool
+HEX to HEXA tool
+HEX to RGB tool
+HEX to RGBA tool
+HEX to HSV tool
+HEX to HSL tool
+HEX to HSLA tool
+HEXA to HEX tool
+HEXA to RGB tool
+HEXA to RGBA tool
+HEXA to HSV tool
+HEXA to HSL tool
+HEXA to HSLA tool
+RGB to HEX tool
+RGB to HEXA tool
+RGB to RGBA tool
+RGB to HSV tool
+RGB to HSL tool
+RGB to HSLA tool
+RGBA to HEX tool
+RGBA to HEXA tool
+RGBA to RGB tool
+RGBA to HSV tool
+RGBA to HSL tool
+RGBA to HSLA tool
+HSV to HEX tool
+HSV to HEXA tool
+HSV to RGB tool
+HSV to RGBA tool
+HSV to HSL tool
+HSV to HSLA tool
+HSL to HEX tool
+HSL to HEXA tool
+HSL to RGB tool
+HSL to RGBA tool
+HSL to HSV tool
+HSL to HSLA tool
+HSLA to HEX tool
+HSLA to HEXA tool
+HSLA to RGB tool
+HSLA to RGBA tool
+HSLA to HSV tool
+HSLA to HSL tool
+Celsius to Fahrenheit tool
+Celsius to Kelvin tool
+Fahrenheit to Celsius tool
+Fahrenheit to Kelvin tool
+Kelvin to Celsius tool
+Kelvin to Fahrenheit tool
+Miles to Kilometers tool
+Kilometers to Miles tool
+Mph to Kph tool
+Kph to Mph tool
+Kilograms to Pounds tool
+Pounds to Kilograms tool
+Number to Roman Numerals tool
+Roman Numerals to Number tool
+Liters to Gallons (US) tool
+Liters to Gallons (Imperial) tool
+Gallons (US) to Liters tool
+Gallons (Imperial) to Liters tool
+Unix Timestamp to Date tool
+Date to Unix Timestamp tool
+Seconds to Minutes tool
+Seconds to Hours tool
+Seconds to Days tool
+Seconds to Weeks tool
+Seconds to Months tool
+Seconds to Years tool
+Minutes to Seconds tool
+Minutes to Hours tool
+Minutes to Days tool
+Minutes to Weeks tool
+Minutes to Months tool
+Minutes to Years tool
+Hours to Seconds tool
+Hours to Minutes tool
+Hours to Days tool
+Hours to Weeks tool
+Hours to Months tool
+Hours to Years tool
+Days to Seconds tool
+Days to Hours tool
+Days to Hours tool
+Days to Weeks tool
+Days to Months tool
+Days to Years tool
+Weeks to Seconds tool
+Weeks to Hours tool
+Weeks to Hours tool
+Weeks to Days tool
+Weeks to Months tool
+Weeks to Years tool
+Months to Seconds tool
+Months to Hours tool
+Months to Hours tool
+Months to Days tool
+Months to Weeks tool
+Months to Years tool
+Years to Seconds tool
+Years to Hours tool
+Years to Hours tool
+Years to Days tool
+Years to Weeks tool
+Years to Months tool
+Bits to X tools
+Nibbles to X tools
+Bytes to X tools
+Kilobits to X tools
+Kibibits to X tools
+Kilobytes to X tools
