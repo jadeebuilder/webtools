@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'newsletter_subscribed',
         'profile_photo_path',
+        'is_admin',
     ];
 
     /**
@@ -45,6 +46,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'newsletter_subscribed' => 'boolean',
+        'is_admin' => 'boolean',
     ];
 
     /**
@@ -53,5 +55,15 @@ class User extends Authenticatable
     public function getNameAttribute()
     {
         return "{$this->firstname} {$this->lastname}";
+    }
+
+    /**
+     * Check if the user is an administrator.
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->is_admin;
     }
 }

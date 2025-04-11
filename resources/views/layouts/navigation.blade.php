@@ -241,35 +241,58 @@
                                 <div class="text-sm font-semibold text-gray-800 truncate">{{ Auth::user()->email }}</div>
                             </div>
                             
-                            <a href="#" class="user-menu-item">
-                                <i class="fas fa-user-circle mr-3 text-purple-500"></i>
-                                {{ __('My Account') }}
-                            </a>
-                            
-                            <a href="#" class="user-menu-item">
-                                <i class="fas fa-cog mr-3 text-blue-500"></i>
-                                {{ __('Account Settings') }}
-                            </a>
-                            
-                            <a href="#" class="user-menu-item">
-                                <i class="fas fa-box mr-3 text-indigo-500"></i>
-                                {{ __('My Packages') }}
-                            </a>
-                            
-                            <a href="#" class="user-menu-item">
-                                <i class="fas fa-history mr-3 text-green-500"></i>
-                                {{ __('Activity History') }}
-                            </a>
+                            <div class="py-1 space-y-1">
+                                @if(Auth::user()->isAdmin())
+                                <div>
+                                    <a href="{{ URL::localizedRoute('admin.dashboard') }}" class="user-menu-item bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:from-purple-600 hover:to-indigo-700">
+                                        <i class="fas fa-crown mr-3 text-yellow-300"></i>
+                                        <span class="font-bold text-lg">{{ __('Admin Panel') }}</span>
+                                    </a>
+                                </div>
+                                
+                                <div class="border-t border-gray-100 my-1"></div>
+                                @endif
+
+                                <div>
+                                    <a href="{{ URL::localizedRoute('user.account') }}" class="user-menu-item">
+                                        <i class="fas fa-user-circle mr-3 text-purple-500"></i>
+                                        <span>{{ __('My Account') }}</span>
+                                    </a>
+                                </div>
+                                
+                                <div>
+                                    <a href="{{ URL::localizedRoute('user.settings') }}" class="user-menu-item">
+                                        <i class="fas fa-cog mr-3 text-blue-500"></i>
+                                        <span>{{ __('Account Settings') }}</span>
+                                    </a>
+                                </div>
+                                
+                                <div>
+                                    <a href="{{ URL::localizedRoute('user.packages') }}" class="user-menu-item">
+                                        <i class="fas fa-box mr-3 text-indigo-500"></i>
+                                        <span>{{ __('My Packages') }}</span>
+                                    </a>
+                                </div>
+                                
+                                <div>
+                                    <a href="{{ URL::localizedRoute('user.history') }}" class="user-menu-item">
+                                        <i class="fas fa-history mr-3 text-green-500"></i>
+                                        <span>{{ __('Activity History') }}</span>
+                                    </a>
+                                </div>
+                            </div>
                             
                             <div class="border-t border-gray-100 mt-1"></div>
                             
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="user-menu-item w-full text-left text-red-600 hover:text-red-700 hover:bg-red-50 group">
-                                    <i class="fas fa-sign-out-alt mr-3 text-red-500 group-hover:text-red-700"></i>
-                                    {{ __('Logout') }}
-                                </button>
-                            </form>
+                            <div class="py-1">
+                                <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
+                                    @csrf
+                                    <button type="submit" class="user-menu-item w-full text-red-600 hover:text-red-700 hover:bg-red-50 group">
+                                        <i class="fas fa-sign-out-alt mr-3 text-red-500 group-hover:text-red-700"></i>
+                                        <span>{{ __('Logout') }}</span>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 @endguest
@@ -332,34 +355,41 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link href="#" class="flex items-center">
+                    @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link href="{{ URL::localizedRoute('admin.dashboard') }}" class="flex items-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
+                        <i class="fas fa-crown mr-2 text-yellow-300"></i>
+                        <span class="font-bold text-lg">{{ __('Admin Panel') }}</span>
+                    </x-responsive-nav-link>
+                    @endif
+                    
+                    <x-responsive-nav-link href="{{ URL::localizedRoute('user.account') }}" class="flex items-center">
                         <i class="fas fa-user-circle mr-2 text-purple-500"></i>
-                        {{ __('My Account') }}
+                        <span>{{ __('My Account') }}</span>
                     </x-responsive-nav-link>
                     
-                    <x-responsive-nav-link href="#" class="flex items-center">
+                    <x-responsive-nav-link href="{{ URL::localizedRoute('user.settings') }}" class="flex items-center">
                         <i class="fas fa-cog mr-2 text-blue-500"></i>
-                        {{ __('Account Settings') }}
+                        <span>{{ __('Account Settings') }}</span>
                     </x-responsive-nav-link>
                     
-                    <x-responsive-nav-link href="#" class="flex items-center">
+                    <x-responsive-nav-link href="{{ URL::localizedRoute('user.packages') }}" class="flex items-center">
                         <i class="fas fa-box mr-2 text-indigo-500"></i>
-                        {{ __('My Packages') }}
+                        <span>{{ __('My Packages') }}</span>
                     </x-responsive-nav-link>
                     
-                    <x-responsive-nav-link href="#" class="flex items-center">
+                    <x-responsive-nav-link href="{{ URL::localizedRoute('user.history') }}" class="flex items-center">
                         <i class="fas fa-history mr-2 text-green-500"></i>
-                        {{ __('Activity History') }}
+                        <span>{{ __('Activity History') }}</span>
                     </x-responsive-nav-link>
                     
                     <!-- Authentication -->
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                         @csrf
-                        <x-responsive-nav-link :href="route('logout')"
+                        <x-responsive-nav-link :href="route('logout', ['locale' => app()->getLocale()])"
                                 onclick="event.preventDefault();
                                 this.closest('form').submit();" class="flex items-center text-red-600">
                             <i class="fas fa-sign-out-alt mr-2 text-red-500"></i>
-                            {{ __('Logout') }}
+                            <span>{{ __('Logout') }}</span>
                         </x-responsive-nav-link>
                     </form>
                 </div>
@@ -374,8 +404,33 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
+/* Style pour les items du menu utilisateur */
 .user-menu-item {
-    @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out flex items-center;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+    color: #4b5563 !important;
+    text-align: left !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    transition: background-color 0.15s ease-in-out !important;
+}
+
+.user-menu-item:hover {
+    background-color: #f9fafb !important;
+    color: #374151 !important;
+}
+
+/* Fix pour le conteneur du menu */
+.origin-top-right a, 
+.origin-top-right button {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 2px !important;
 }
 
 /* Animation pour le menu déroulant utilisateur */

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Vérifie si toutes les chaines dans les nouvelles view ont été traduites . sinon vérifie si sont préparée pour la traduction et ajoute les au fichier de traduction existant du projet
