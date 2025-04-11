@@ -720,7 +720,7 @@
                         <!-- Logo et Description -->
                         <div class="space-y-6">
                             <div class="flex items-center">
-                                <img src="/images/logo.svg" alt="WebTools Logo" class="h-8 w-auto">
+                                <img src="{{ Vite::asset('resources/images/webtools_logo_gris.png') }}" alt="WebTools Logo" class="h-8 w-auto">
                                 <span class="ml-3 text-xl font-bold">WebTools</span>
                             </div>
                             <p class="text-gray-400 text-sm">

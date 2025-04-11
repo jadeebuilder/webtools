@@ -6,6 +6,10 @@ export default defineConfig({
         laravel({
             input: ["resources/css/app.css", "resources/js/app.js"],
             refresh: true,
+            // Copier les ressources vers le dossier public
+            publicDirectory: "public",
+            // Inclure les images dans les ressources accessibles
+            includeAssets: ["resources/images/**"],
         }),
     ],
     server: {
@@ -14,5 +18,16 @@ export default defineConfig({
             host: "localhost",
         },
         cors: true,
+    },
+    // Définir les alias pour faciliter l'importation
+    resolve: {
+        alias: {
+            '@': '/resources',
+            '~': '/public',
+        },
+    },
+    // Configurer comment les ressources sont construites
+    build: {
+        assetsInlineLimit: 0, // Empêche l'incorporation de fichiers en base64
     },
 });
