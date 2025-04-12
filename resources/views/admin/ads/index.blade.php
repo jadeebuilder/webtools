@@ -131,7 +131,7 @@
                                             <i class="fas {{ $ad->active ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
                                         </button>
                                     </form>
-                                    <a href="{{ route('admin.ads.edit', ['locale' => app()->getLocale(), 'ad_id' => $ad->id]) }}" class="p-2 text-indigo-600 hover:bg-indigo-100 dark:text-indigo-500 dark:hover:bg-indigo-900 rounded hover:shadow-sm" title="Modifier">
+                                    <a href="{{ route('admin.ads.edit', ['locale' => app()->getLocale(), 'ad_id' => intval($ad->id)]) }}" class="p-2 text-indigo-600 hover:bg-indigo-100 dark:text-indigo-500 dark:hover:bg-indigo-900 rounded hover:shadow-sm" title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('admin.ads.destroy', ['locale' => app()->getLocale(), 'ad_id' => $ad->id]) }}" method="POST" onsubmit="return confirm('{{ __('Êtes-vous sûr de vouloir supprimer cette publicité ?') }}')">

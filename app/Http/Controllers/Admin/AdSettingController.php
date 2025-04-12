@@ -101,17 +101,31 @@ class AdSettingController extends Controller
             \Log::info("Edit tous les paramètres de route: ", $request->route()->parameters());
             \Log::info("Edit données request: ", $request->all());
             
-            // Si l'ID est une chaîne qui ressemble à un nombre, la convertir
-            if (is_string($ad_id) && ctype_digit($ad_id)) {
-                $ad_id = (int)$ad_id;
-                \Log::info("ID converti en entier: " . $ad_id);
-            }
-            
-            // Peut-être que l'ID est dans le formulaire?
-            $formId = $request->input('ad_id');
-            if ($formId) {
-                \Log::info("ID trouvé dans le formulaire: " . $formId);
-                $ad_id = $formId;
+            // Extraire seulement l'identifiant numérique si le paramètre contient d'autres caractères
+            if (is_string($ad_id)) {
+                // Utiliser une expression régulière pour extraire uniquement les chiffres
+                if (preg_match('/(\d+)/', $ad_id, $matches)) {
+                    $ad_id = (int)$matches[1];
+                    \Log::info("ID extrait et converti en entier: " . $ad_id);
+                }
+                // Si aucun chiffre n'est trouvé, vérifier les paramètres de la requête
+                else {
+                    // Vérifier si l'ID est présent dans la requête 
+                    $formId = $request->input('ad_id');
+                    if ($formId && is_numeric($formId)) {
+                        $ad_id = (int)$formId;
+                        \Log::info("ID trouvé dans le formulaire: " . $ad_id);
+                    } else {
+                        // Rechercher un paramètre qui pourrait contenir l'ID dans la requête
+                        foreach ($request->route()->parameters() as $key => $value) {
+                            if (is_numeric($value) && $value > 0) {
+                                $ad_id = (int)$value;
+                                \Log::info("ID trouvé dans les paramètres de route sous la clé '{$key}': {$ad_id}");
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             
             // Vérifier si l'ID est numérique
@@ -122,10 +136,15 @@ class AdSettingController extends Controller
                 foreach ($request->all() as $key => $value) {
                     if (is_numeric($value) && $value > 0) {
                         \Log::info("Possible ID trouvé dans la requête sous la clé '{$key}': {$value}");
+                        $ad_id = (int)$value;
+                        break;
                     }
                 }
                 
-                throw new \Exception("L'ID fourni n'est pas valide: " . $ad_id);
+                // Si toujours pas d'ID valide, lancer une exception
+                if (!is_numeric($ad_id) || $ad_id <= 0) {
+                    throw new \Exception("L'ID fourni n'est pas valide: " . $ad_id);
+                }
             }
             
             // Rechercher l'enregistrement avec une requête explicite
@@ -184,23 +203,61 @@ class AdSettingController extends Controller
             \Log::info("Update appelé avec ID route: " . $ad_id);
             \Log::info("Update données request: ", $request->all());
             
-            // Essayer d'abord avec l'ID de la route
-            $adId = $ad_id;
+            // Extraire seulement l'identifiant numérique si le paramètre contient d'autres caractères
+            if (is_string($ad_id)) {
+                // Utiliser une expression régulière pour extraire uniquement les chiffres
+                if (preg_match('/(\d+)/', $ad_id, $matches)) {
+                    $ad_id = (int)$matches[1];
+                    \Log::info("ID extrait et converti en entier: " . $ad_id);
+                }
+                // Si aucun chiffre n'est trouvé, vérifier les paramètres de la requête
+                else {
+                    // Vérifier si l'ID est présent dans la requête 
+                    $formId = $request->input('ad_id');
+                    if ($formId && is_numeric($formId)) {
+                        $ad_id = (int)$formId;
+                        \Log::info("ID trouvé dans le formulaire: " . $ad_id);
+                    } else {
+                        // Rechercher un paramètre qui pourrait contenir l'ID dans la requête
+                        foreach ($request->route()->parameters() as $key => $value) {
+                            if (is_numeric($value) && $value > 0) {
+                                $ad_id = (int)$value;
+                                \Log::info("ID trouvé dans les paramètres de route sous la clé '{$key}': {$ad_id}");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             
             // Vérifier si l'ID est numérique
-            if (!is_numeric($adId) || $adId <= 0) {
-                throw new \Exception("L'ID fourni n'est pas valide: " . $adId);
+            if (!is_numeric($ad_id) || $ad_id <= 0) {
+                \Log::warning("L'ID n'est pas valide: " . $ad_id);
+                
+                // Rechercher l'ID dans la requête
+                foreach ($request->all() as $key => $value) {
+                    if (is_numeric($value) && $value > 0) {
+                        \Log::info("Possible ID trouvé dans la requête sous la clé '{$key}': {$value}");
+                        $ad_id = (int)$value;
+                        break;
+                    }
+                }
+                
+                // Si toujours pas d'ID valide, lancer une exception
+                if (!is_numeric($ad_id) || $ad_id <= 0) {
+                    throw new \Exception("L'ID fourni n'est pas valide: " . $ad_id);
+                }
             }
             
             // Rechercher l'enregistrement avec une requête explicite
-            $ad = AdSetting::where('id', $adId)->first();
+            $ad = AdSetting::where('id', $ad_id)->first();
             
             // Vérifier si l'enregistrement existe
             if (!$ad) {
-                throw new \Exception("Aucun enregistrement trouvé avec l'ID: " . $adId);
+                throw new \Exception("Aucun enregistrement trouvé avec l'ID: " . $ad_id);
             }
             
-            $validated = $this->validateAd($request, $adId);
+            $validated = $this->validateAd($request, $ad_id);
             
             // Gérer les options d'affichage
             $displayOn = $request->input('display_on', []);
@@ -238,7 +295,7 @@ class AdSettingController extends Controller
             }
             
             // Journalisation pour le débogage
-            \Log::info("Mise à jour de la publicité ID " . $adId . " avec données: ", $validated);
+            \Log::info("Mise à jour de la publicité ID " . $ad_id . " avec données: ", $validated);
             
             // Mettre à jour l'enregistrement
             $updated = $ad->update($validated);
@@ -253,7 +310,7 @@ class AdSettingController extends Controller
             return redirect()->route('admin.ads.index', ['locale' => app()->getLocale()])
                 ->with('success', __('La publicité a été mise à jour avec succès.'));
         } catch (\Exception $e) {
-            \Log::error("Erreur lors de la mise à jour de la publicité ID " . ($adId ?? $ad_id) . ": " . $e->getMessage());
+            \Log::error("Erreur lors de la mise à jour de la publicité ID " . ($ad_id ?? $ad_id) . ": " . $e->getMessage());
             
             return redirect()->back()
                 ->withInput()
@@ -274,26 +331,58 @@ class AdSettingController extends Controller
             \Log::info("Toggle appelé avec ID route: " . $ad_id);
             \Log::info("Toggle données formulaire: ", $request->all());
             
-            // Essayer d'abord avec l'ID de la route
-            $adId = $ad_id;
-            
-            // Si l'ID de la route n'est pas valide, essayer avec l'ID du formulaire
-            if (!is_numeric($adId) || $adId <= 0) {
-                $adId = $request->input('ad_id');
-                \Log::info("Utilisation de l'ID du formulaire: " . $adId);
+            // Extraire seulement l'identifiant numérique si le paramètre contient d'autres caractères
+            if (is_string($ad_id)) {
+                // Utiliser une expression régulière pour extraire uniquement les chiffres
+                if (preg_match('/(\d+)/', $ad_id, $matches)) {
+                    $ad_id = (int)$matches[1];
+                    \Log::info("ID extrait et converti en entier: " . $ad_id);
+                }
+                // Si aucun chiffre n'est trouvé, vérifier les paramètres de la requête
+                else {
+                    // Vérifier si l'ID est présent dans la requête 
+                    $formId = $request->input('ad_id');
+                    if ($formId && is_numeric($formId)) {
+                        $ad_id = (int)$formId;
+                        \Log::info("ID trouvé dans le formulaire: " . $ad_id);
+                    } else {
+                        // Rechercher un paramètre qui pourrait contenir l'ID dans la requête
+                        foreach ($request->route()->parameters() as $key => $value) {
+                            if (is_numeric($value) && $value > 0) {
+                                $ad_id = (int)$value;
+                                \Log::info("ID trouvé dans les paramètres de route sous la clé '{$key}': {$ad_id}");
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             
             // Vérifier si l'ID est numérique
-            if (!is_numeric($adId) || $adId <= 0) {
-                throw new \Exception("L'ID fourni n'est pas valide: " . $adId);
+            if (!is_numeric($ad_id) || $ad_id <= 0) {
+                \Log::warning("L'ID n'est pas valide: " . $ad_id);
+                
+                // Rechercher l'ID dans la requête
+                foreach ($request->all() as $key => $value) {
+                    if (is_numeric($value) && $value > 0) {
+                        \Log::info("Possible ID trouvé dans la requête sous la clé '{$key}': {$value}");
+                        $ad_id = (int)$value;
+                        break;
+                    }
+                }
+                
+                // Si toujours pas d'ID valide, lancer une exception
+                if (!is_numeric($ad_id) || $ad_id <= 0) {
+                    throw new \Exception("L'ID fourni n'est pas valide: " . $ad_id);
+                }
             }
             
             // Rechercher l'enregistrement avec une requête explicite
-            $ad = AdSetting::where('id', $adId)->first();
+            $ad = AdSetting::where('id', $ad_id)->first();
             
             // Vérifier si l'enregistrement existe
             if (!$ad) {
-                throw new \Exception("Aucun enregistrement trouvé avec l'ID: " . $adId);
+                throw new \Exception("Aucun enregistrement trouvé avec l'ID: " . $ad_id);
             }
             
             // Basculer l'état actif
@@ -328,26 +417,58 @@ class AdSettingController extends Controller
             \Log::info("Destroy appelé avec ID route: " . $ad_id);
             \Log::info("Destroy données formulaire: ", $request->all());
             
-            // Essayer d'abord avec l'ID de la route
-            $adId = $ad_id;
-            
-            // Si l'ID de la route n'est pas valide, essayer avec l'ID du formulaire
-            if (!is_numeric($adId) || $adId <= 0) {
-                $adId = $request->input('ad_id');
-                \Log::info("Utilisation de l'ID du formulaire: " . $adId);
+            // Extraire seulement l'identifiant numérique si le paramètre contient d'autres caractères
+            if (is_string($ad_id)) {
+                // Utiliser une expression régulière pour extraire uniquement les chiffres
+                if (preg_match('/(\d+)/', $ad_id, $matches)) {
+                    $ad_id = (int)$matches[1];
+                    \Log::info("ID extrait et converti en entier: " . $ad_id);
+                }
+                // Si aucun chiffre n'est trouvé, vérifier les paramètres de la requête
+                else {
+                    // Vérifier si l'ID est présent dans la requête 
+                    $formId = $request->input('ad_id');
+                    if ($formId && is_numeric($formId)) {
+                        $ad_id = (int)$formId;
+                        \Log::info("ID trouvé dans le formulaire: " . $ad_id);
+                    } else {
+                        // Rechercher un paramètre qui pourrait contenir l'ID dans la requête
+                        foreach ($request->route()->parameters() as $key => $value) {
+                            if (is_numeric($value) && $value > 0) {
+                                $ad_id = (int)$value;
+                                \Log::info("ID trouvé dans les paramètres de route sous la clé '{$key}': {$ad_id}");
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             
             // Vérifier si l'ID est numérique
-            if (!is_numeric($adId) || $adId <= 0) {
-                throw new \Exception("L'ID fourni n'est pas valide: " . $adId);
+            if (!is_numeric($ad_id) || $ad_id <= 0) {
+                \Log::warning("L'ID n'est pas valide: " . $ad_id);
+                
+                // Rechercher l'ID dans la requête
+                foreach ($request->all() as $key => $value) {
+                    if (is_numeric($value) && $value > 0) {
+                        \Log::info("Possible ID trouvé dans la requête sous la clé '{$key}': {$value}");
+                        $ad_id = (int)$value;
+                        break;
+                    }
+                }
+                
+                // Si toujours pas d'ID valide, lancer une exception
+                if (!is_numeric($ad_id) || $ad_id <= 0) {
+                    throw new \Exception("L'ID fourni n'est pas valide: " . $ad_id);
+                }
             }
             
             // Rechercher l'enregistrement avec une requête explicite
-            $ad = AdSetting::where('id', $adId)->first();
+            $ad = AdSetting::where('id', $ad_id)->first();
             
             // Vérifier si l'enregistrement existe
             if (!$ad) {
-                throw new \Exception("Aucun enregistrement trouvé avec l'ID: " . $adId);
+                throw new \Exception("Aucun enregistrement trouvé avec l'ID: " . $ad_id);
             }
             
             // Suppression de l'image si elle existe et est stockée localement
