@@ -10,6 +10,13 @@ class AdSetting extends Model
     use HasFactory;
 
     /**
+     * La table associée au modèle.
+     *
+     * @var string
+     */
+    protected $table = 'ad_settings';
+
+    /**
      * Les attributs qui sont assignables en masse.
      *
      * @var array<int, string>

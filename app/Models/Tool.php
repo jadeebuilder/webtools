@@ -146,4 +146,12 @@ class Tool extends Model
             ->orderBy('order')
             ->with('section');
     }
+
+    /**
+     * Obtenir les configurations d'emplacements publicitaires spécifiques à cet outil.
+     */
+    public function adSettings(): HasMany
+    {
+        return $this->hasMany(ToolAdSetting::class);
+    }
 }

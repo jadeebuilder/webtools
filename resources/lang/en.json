@@ -641,5 +641,15 @@
     "Description personnalisée": "Custom Description",
     "Annuler": "Cancel",
     "Créer l'outil": "Create Tool",
-    "Retour à la liste": "Back to list"
+    "Retour à la liste": "Back to list",
+    "Source de l'image": "Image Source",
+    "Téléverser une image": "Upload Image",
+    "URL externe": "External URL", 
+    "Chemin relatif": "Relative Path",
+    "Chemin relatif de l'image": "Relative Image Path",
+    "URL de l'image": "Image URL",
+    "Formats acceptés: JPG, PNG, GIF. Taille max: 2MB": "Accepted formats: JPG, PNG, GIF. Max size: 2MB",
+    "Image actuelle": "Current Image",
+    "La nouvelle image remplacera celle-ci si une est fournie": "The new image will replace this one if provided",
+    "Exemple: https://example.com/images/banner.jpg": "Example: https://example.com/images/banner.jpg"
 } 

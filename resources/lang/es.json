@@ -616,5 +616,15 @@
     "Description personnalisée": "Descripción personalizada",
     "Annuler": "Cancelar",
     "Créer l'outil": "Crear herramienta",
-    "Retour à la liste": "Volver a la lista"
+    "Retour à la liste": "Volver a la lista",
+    "Source de l'image": "Fuente de la imagen",
+    "Téléverser une image": "Subir imagen",
+    "URL externe": "URL externa", 
+    "Chemin relatif": "Ruta relativa",
+    "Chemin relatif de l'image": "Ruta relativa de la imagen",
+    "URL de l'image": "URL de la imagen",
+    "Formats acceptés: JPG, PNG, GIF. Taille max: 2MB": "Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 2MB",
+    "Image actuelle": "Imagen actual",
+    "La nouvelle image remplacera celle-ci si une est fournie": "La nueva imagen reemplazará esta si se proporciona",
+    "Exemple: https://example.com/images/banner.jpg": "Ejemplo: https://example.com/images/banner.jpg"
 } 

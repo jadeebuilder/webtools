@@ -28,10 +28,42 @@ class AdService
             return Cache::get($cacheKey);
         }
         
+        // Journalisation pour le débogage
+        \Log::debug("Recherche de publicités pour le type de page: {$pageType}");
+        
+        // Méthode 1: Avec whereJsonContains (approche standard)
         $ads = AdSetting::where('active', true)
             ->whereJsonContains('display_on', $pageType)
             ->orderBy('priority', 'desc')
             ->get();
+        
+        \Log::debug("Publicités trouvées avec whereJsonContains: " . $ads->count());
+        
+        // Si aucune publicité trouvée, essayer une méthode alternative
+        if ($ads->count() === 0) {
+            \Log::debug("Tentative avec méthode alternative de recherche");
+            
+            // Récupérer toutes les publicités actives
+            $allActiveAds = AdSetting::where('active', true)->get();
+            
+            // Filtrer manuellement
+            $ads = $allActiveAds->filter(function ($ad) use ($pageType) {
+                if (is_array($ad->display_on)) {
+                    return in_array($pageType, $ad->display_on);
+                } elseif (is_string($ad->display_on)) {
+                    try {
+                        $displayOn = json_decode($ad->display_on, true);
+                        return is_array($displayOn) && in_array($pageType, $displayOn);
+                    } catch (\Exception $e) {
+                        \Log::warning("Impossible de décoder display_on pour l'annonce ID {$ad->id}: " . $e->getMessage());
+                        return false;
+                    }
+                }
+                return false;
+            });
+            
+            \Log::debug("Publicités trouvées avec méthode alternative: " . $ads->count());
+        }
         
         $adsArray = $this->formatAdsToArray($ads);
         

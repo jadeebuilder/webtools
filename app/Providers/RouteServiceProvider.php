@@ -26,6 +26,9 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
+        // Bind le modèle AdSetting au paramètre "ad" des routes
+        Route::model('ad', \App\Models\AdSetting::class);
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

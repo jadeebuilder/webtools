@@ -16,6 +16,9 @@ use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Admin\TemplateSectionController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ToolCategoryController;
+use App\Http\Controllers\Admin\ToolAdSettingController;
+use App\Http\Controllers\Admin\AdTestController;
+use App\Http\Controllers\Admin\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,9 +114,34 @@ Route::prefix('{locale}')
             // Dashboard
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             
-            // Gestion des publicités
-            Route::resource('ads', AdSettingController::class);
-            Route::put('ads/{ad}/toggle', [AdSettingController::class, 'toggle'])->name('ads.toggle');
+            // Route de test pour le déboggage
+            Route::get('/ads-test', function() {
+                return response()->json(['success' => true, 'message' => 'Route de test fonctionnelle']);
+            })->name('ads.test');
+            
+            // Routes des publicités définies manuellement plutôt qu'avec Route::resource
+            // Créé des routes explicites avec un préfixe pour les regrouper clairement
+            Route::prefix('ads')->name('ads.')->group(function () {
+                // Routes sans paramètre (doivent être définies avant les routes avec paramètres)
+                Route::get('/', [AdSettingController::class, 'index'])->name('index');
+                Route::post('/', [AdSettingController::class, 'store'])->name('store');
+                Route::get('/create', [AdSettingController::class, 'create'])->name('create');
+                Route::get('/global-settings', [AdSettingController::class, 'globalSettings'])->name('global-settings');
+                Route::post('/global-settings', [AdSettingController::class, 'updateGlobalSettings'])->name('global-settings.update');
+                
+                // Page de test des publicités
+                Route::get('/test', [AdTestController::class, 'index'])->name('test');
+                Route::get('/test/repair', [AdTestController::class, 'repairAds'])->name('test.repair');
+                
+                // Définir les routes avec des noms de paramètres plus explicites
+                Route::get('/edit/{ad_id}', [AdSettingController::class, 'edit'])->name('edit')->where('ad_id', '[0-9]+');
+                Route::put('/update/{ad_id}', [AdSettingController::class, 'update'])->name('update')->where('ad_id', '[0-9]+');
+                Route::delete('/delete/{ad_id}', [AdSettingController::class, 'destroy'])->name('destroy')->where('ad_id', '[0-9]+');
+                Route::put('/toggle/{ad_id}', [AdSettingController::class, 'toggle'])->name('toggle')->where('ad_id', '[0-9]+');
+                
+                // Garder cette route pour rétrocompatibilité
+                Route::get('/{id}', [AdSettingController::class, 'show'])->name('show')->where('id', '[0-9]+');
+            });
             
             // Gestion des templates d'outils
             Route::get('templates', [TemplateController::class, 'index'])->name('templates.index');
@@ -133,6 +161,10 @@ Route::prefix('{locale}')
             Route::resource('tools', AdminToolController::class);
             Route::post('tools/generate-slug', [AdminToolController::class, 'generateSlug'])->name('tools.generate-slug');
             Route::put('tools/{tool}/toggle-status', [AdminToolController::class, 'toggleStatus'])->name('tools.toggle-status');
+            
+            // Configuration des publicités par outil
+            Route::get('tools/{tool}/ads', [ToolAdSettingController::class, 'edit'])->name('tools.ads.edit');
+            Route::put('tools/{tool}/ads', [ToolAdSettingController::class, 'update'])->name('tools.ads.update');
             
             // Gestion des catégories d'outils
             Route::resource('tool-categories', ToolCategoryController::class);
