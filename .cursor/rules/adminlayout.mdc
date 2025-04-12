@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+</x-admin-layout> est le layout  qui doit être utiliser pour tous les view des fonctionnalité du panel d'adminsitration

@@ -3,4 +3,6 @@ description:
 globs: 
 alwaysApply: true
 ---
+Ne crée pas de nouveaux fichier de traduction 
+Ajoute les nouvelles traduction dans les fichiers de traduiction json fr , en  , es
 Vérifie si toutes les chaines dans les nouvelles view ont été traduites . sinon vérifie si sont préparée pour la traduction et ajoute les au fichier de traduction existant du projet

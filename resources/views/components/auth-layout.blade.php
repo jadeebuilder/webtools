@@ -129,7 +129,7 @@
                         <p class="text-gray-400 text-sm mb-4">
                             {{ __('Subscribe to our newsletter for the latest updates and tools.') }}
                         </p>
-                        <form class="space-y-3" action="{{ route('newsletter.subscribe') }}" method="POST">
+                        <form class="space-y-3" action="{{ URL::localizedRoute('newsletter.subscribe') }}" method="POST">
                             @csrf
                             <div class="flex">
                                 <input type="email"

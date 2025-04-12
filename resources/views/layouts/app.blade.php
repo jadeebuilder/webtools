@@ -5,11 +5,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ $pageTitle ?? config('app.name', 'Laravel') }}</title>
+        <meta name="description" content="{{ $metaDescription ?? '' }}">
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:title" content="{{ $pageTitle ?? config('app.name', 'Laravel') }}">
+        <meta property="og:description" content="{{ $metaDescription ?? '' }}">
+        <meta property="og:image" content="{{ $ogImage ?? asset('images/og-default.jpg') }}">
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="{{ $twitterCardType ?? 'summary_large_image' }}">
+        <meta name="twitter:url" content="{{ url()->current() }}">
+        <meta name="twitter:title" content="{{ $pageTitle ?? config('app.name', 'Laravel') }}">
+        <meta name="twitter:description" content="{{ $metaDescription ?? '' }}">
+        <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-default.jpg') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -22,6 +38,10 @@
 
         <!-- Styles -->
         <style>
+            body {
+                font-family: 'Poppins', sans-serif;
+            }
+            
             .tool-item {
                 transition: all 0.2s ease-in-out;
             }
@@ -36,6 +56,26 @@
 
             .tool-item:hover .tool-icon {
                 transform: scale(1.1);
+            }
+            
+            .btn-primary {
+                background-color: #660bab;
+            }
+            
+            .btn-primary:hover {
+                background-color: #4e0883;
+            }
+            
+            .text-primary {
+                color: #660bab;
+            }
+            
+            .bg-primary {
+                background-color: #660bab;
+            }
+            
+            .border-primary {
+                border-color: #660bab;
             }
         </style>
     </head>
@@ -142,13 +182,15 @@
                             <p class="text-gray-400 text-sm mb-4">
                                 {{ __('Subscribe to our newsletter for the latest updates and tools.') }}
                             </p>
-                            <form class="space-y-3">
+                            <form class="space-y-3" action="{{ URL::localizedRoute('newsletter.subscribe') }}" method="POST">
+                                @csrf
                                 <div class="flex">
                                     <input type="email"
+                                           name="email"
                                            placeholder="{{ __('Enter your email') }}"
-                                           class="flex-grow px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white">
+                                           class="flex-grow px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-800 text-white">
                                     <button type="submit"
-                                            class="px-4 py-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 transition-colors duration-300">
+                                            class="px-4 py-2 bg-purple-700 text-white rounded-r-lg hover:bg-purple-800 transition-colors duration-300">
                                         {{ __('Subscribe') }}
                                     </button>
                                 </div>
@@ -161,7 +203,7 @@
                             © {{ date('Y') }} WebTools. {{ __('All rights reserved.') }}
                         </p>
                         <div class="mt-4 md:mt-0">
-                            <select onchange="window.location.href=this.value" class="bg-gray-800 text-gray-400 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select onchange="window.location.href=this.value" class="bg-gray-800 text-gray-400 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-purple-500">
                                 @foreach(config('app.available_locales') as $langKey => $langName)
                                     @php
                                         // Construire la nouvelle URL en remplaçant simplement la partie langue

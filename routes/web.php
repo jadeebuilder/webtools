@@ -8,6 +8,14 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Tools\CaseConverterController;
+use App\Http\Controllers\Admin\AdSettingController;
+use App\Http\Controllers\Admin\ToolController as AdminToolController;
+use App\Http\Controllers\Admin\ToolTemplateController;
+use App\Http\Controllers\Admin\TemplateController;
+use App\Http\Controllers\Admin\TemplateSectionController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ToolCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +60,13 @@ Route::prefix('{locale}')
         // Route pour l'utilisation d'un outil spécifique
         Route::get('/tool/{slug}', [ToolController::class, 'show'])->name('tool.show');
 
+        // Routes pour les outils spécifiques
+        Route::prefix('tools')->group(function () {
+            // Case Converter
+            Route::get('/case-converter', [CaseConverterController::class, 'show'])->name('tools.case-converter');
+            Route::post('/case-converter/process', [CaseConverterController::class, 'process'])->name('tools.case-converter.process');
+        });
+
         // Dashboard et routes authentifiées
         Route::get('/dashboard', function () {
             return view('dashboard');
@@ -90,10 +105,58 @@ Route::prefix('{locale}')
         Route::get('/cookies', function () {
             return view('pages.cookies');
         })->name('cookies');
-    });
 
-// Newsletter subscription
-Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+        // Routes d'administration
+        Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+            // Dashboard
+            Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+            
+            // Gestion des publicités
+            Route::resource('ads', AdSettingController::class);
+            Route::put('ads/{ad}/toggle', [AdSettingController::class, 'toggle'])->name('ads.toggle');
+            
+            // Gestion des templates d'outils
+            Route::get('templates', [TemplateController::class, 'index'])->name('templates.index');
+            Route::get('templates/{tool}/edit', [TemplateController::class, 'edit'])->name('templates.edit');
+            Route::post('templates/{tool}', [TemplateController::class, 'update'])->name('templates.update');
+            
+            // Gestion des sections de templates
+            Route::get('templates/sections', [TemplateSectionController::class, 'index'])->name('templates.sections.index');
+            Route::get('templates/sections/create', [TemplateSectionController::class, 'create'])->name('templates.sections.create');
+            Route::post('templates/sections', [TemplateSectionController::class, 'store'])->name('templates.sections.store');
+            Route::get('templates/sections/{section}/edit', [TemplateSectionController::class, 'edit'])->name('templates.sections.edit');
+            Route::put('templates/sections/{section}', [TemplateSectionController::class, 'update'])->name('templates.sections.update');
+            Route::delete('templates/sections/{section}', [TemplateSectionController::class, 'destroy'])->name('templates.sections.destroy');
+            Route::put('templates/sections/{section}/toggle', [TemplateSectionController::class, 'toggle'])->name('templates.sections.toggle');
+            
+            // Gestion des outils
+            Route::resource('tools', AdminToolController::class);
+            Route::post('tools/generate-slug', [AdminToolController::class, 'generateSlug'])->name('tools.generate-slug');
+            Route::put('tools/{tool}/toggle-status', [AdminToolController::class, 'toggleStatus'])->name('tools.toggle-status');
+            
+            // Gestion des catégories d'outils
+            Route::resource('tool-categories', ToolCategoryController::class);
+            Route::put('tool-categories/{category}/toggle-status', [ToolCategoryController::class, 'toggleStatus'])->name('tool-categories.toggle-status');
+            
+            // Configuration générale
+            Route::get('settings/general', [SettingController::class, 'general'])->name('settings.general');
+            Route::post('settings/general', [SettingController::class, 'updateGeneral'])->name('settings.general.update');
+            Route::get('settings/maintenance', [SettingController::class, 'maintenance'])->name('settings.maintenance');
+            Route::post('settings/maintenance', [SettingController::class, 'updateMaintenance'])->name('settings.maintenance.update');
+            Route::get('settings/sitemap', [SettingController::class, 'sitemap'])->name('settings.sitemap');
+            Route::post('settings/sitemap', [SettingController::class, 'updateSitemap'])->name('settings.sitemap.update');
+            Route::get('settings/company', [SettingController::class, 'company'])->name('settings.company');
+            Route::post('settings/company', [SettingController::class, 'updateCompany'])->name('settings.company.update');
+            Route::get('settings/clear-cache', [SettingController::class, 'clearCache'])->name('settings.clear-cache');
+            Route::get('settings/reset-defaults', [SettingController::class, 'resetToDefaults'])->name('settings.reset-defaults');
+            Route::get('settings/maintenance-template', function() {
+                return response()->download(resource_path('views/errors/maintenance.blade.php'));
+            })->name('settings.maintenance-template');
+        });
+
+        // Newsletter subscription
+        Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+    });
 
 // Authentification (routes sans préfixe de langue)
 require __DIR__ . '/auth.php';
