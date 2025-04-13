@@ -233,3 +233,8 @@ Route::prefix('{locale}')
 
 // Authentification (routes sans préfixe de langue)
 require __DIR__ . '/auth.php';
+
+// Route de test pour vérifier notre helper
+Route::get('/test-helper', function () {
+    return view('test-helper');
+});

@@ -39,7 +39,7 @@
                             @if($tools->count() > 0)
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     @foreach($tools as $tool)
-                                        <a href="{{ route('tool.show', ['locale' => app()->getLocale(), 'slug' => $tool->slug]) }}" 
+                                        <a href="{{ route($tool->getRouteName(), $tool->getRouteParameters()) }}" 
                                            class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden transform hover:-translate-y-1">
                                             <div class="p-5">
                                                 <div class="flex items-center mb-3">

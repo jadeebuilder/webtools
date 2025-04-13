@@ -154,4 +154,50 @@ class Tool extends Model
     {
         return $this->hasMany(ToolAdSetting::class);
     }
+
+    /**
+     * Vérifier si l'outil possède une route personnalisée.
+     * 
+     * @return bool
+     */
+    public function hasCustomRoute(): bool
+    {
+        // Liste des outils avec des routes personnalisées
+        $customRouteTools = [
+            'case-converter',
+            // Ajouter d'autres outils avec des routes personnalisées ici
+        ];
+        
+        return in_array($this->slug, $customRouteTools);
+    }
+    
+    /**
+     * Obtenir le nom de la route pour cet outil.
+     * 
+     * @return string
+     */
+    public function getRouteName(): string
+    {
+        if ($this->hasCustomRoute()) {
+            return 'tools.' . $this->slug;
+        }
+        
+        return 'tool.show';
+    }
+    
+    /**
+     * Obtenir les paramètres de route pour cet outil.
+     * 
+     * @return array
+     */
+    public function getRouteParameters(): array
+    {
+        $params = ['locale' => app()->getLocale()];
+        
+        if (!$this->hasCustomRoute()) {
+            $params['slug'] = $this->slug;
+        }
+        
+        return $params;
+    }
 }

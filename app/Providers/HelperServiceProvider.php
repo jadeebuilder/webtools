@@ -16,6 +16,9 @@ class HelperServiceProvider extends ServiceProvider
         $this->app->bind('url.helper', function () {
             return new URL();
         });
+
+        // Charger le fichier helpers.php
+        require_once app_path('Helpers/helpers.php');
     }
 
     /**
