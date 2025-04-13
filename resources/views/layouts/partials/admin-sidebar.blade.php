@@ -155,9 +155,9 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-ban text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.adblock.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.adblock.*') ? 'active' : '' }}">
+                                <i class="fas fa-ban text-lg sidebar-icon {{ request()->routeIs('admin.adblock.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Détection AdBlock') }}</span>
                             </a>
                         </li>

@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\ToolCategoryController;
 use App\Http\Controllers\Admin\ToolAdSettingController;
 use App\Http\Controllers\Admin\AdTestController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\AdBlockController;
+use App\Http\Controllers\DiagnosticController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,27 +49,28 @@ Route::prefix('{locale}')
         // Routes pour les différentes catégories d'outils
         Route::prefix('tools')->group(function () {
             Route::get('/', [ToolController::class, 'index'])->name('tools.index');
-            Route::get('/checker', [ToolController::class, 'checker'])->name('tools.checker');
-            Route::get('/text', [ToolController::class, 'text'])->name('tools.text');
-            Route::get('/converter', [ToolController::class, 'converter'])->name('tools.converter');
-            Route::get('/generator', [ToolController::class, 'generator'])->name('tools.generator');
-            Route::get('/developer', [ToolController::class, 'developer'])->name('tools.developer');
-            Route::get('/image', [ToolController::class, 'image'])->name('tools.image');
-            Route::get('/unit', [ToolController::class, 'unit'])->name('tools.unit');
-            Route::get('/time', [ToolController::class, 'time'])->name('tools.time');
-            Route::get('/data', [ToolController::class, 'data'])->name('tools.data');
-            Route::get('/color', [ToolController::class, 'color'])->name('tools.color');
-            Route::get('/misc', [ToolController::class, 'misc'])->name('tools.misc');
+            Route::get('checker', [ToolController::class, 'checker'])->name('tools.checker');
+            Route::get('text', [ToolController::class, 'text'])->name('tools.text');
+            Route::get('converter', [ToolController::class, 'converter'])->name('tools.converter');
+            Route::get('generator', [ToolController::class, 'generator'])->name('tools.generator');
+            Route::get('developer', [ToolController::class, 'developer'])->name('tools.developer');
+            Route::get('image', [ToolController::class, 'image'])->name('tools.image');
+            Route::get('unit', [ToolController::class, 'unit'])->name('tools.unit');
+            Route::get('time', [ToolController::class, 'time'])->name('tools.time');
+            Route::get('data', [ToolController::class, 'data'])->name('tools.data');
+            Route::get('color', [ToolController::class, 'color'])->name('tools.color');
+            Route::get('misc', [ToolController::class, 'misc'])->name('tools.misc');
+            Route::get('category/{slug}', [ToolController::class, 'category'])->name('tools.category');
         });
 
         // Route pour l'utilisation d'un outil spécifique
-        Route::get('/tool/{slug}', [ToolController::class, 'show'])->name('tool.show');
+        Route::get('tool/{slug}', [ToolController::class, 'show'])->name('tool.show');
 
         // Routes pour les outils spécifiques
         Route::prefix('tools')->group(function () {
             // Case Converter
-            Route::get('/case-converter', [CaseConverterController::class, 'show'])->name('tools.case-converter');
-            Route::post('/case-converter/process', [CaseConverterController::class, 'process'])->name('tools.case-converter.process');
+            Route::get('case-converter', [CaseConverterController::class, 'show'])->name('tools.case-converter');
+            Route::post('case-converter/process', [CaseConverterController::class, 'process'])->name('tools.case-converter.process');
         });
 
         // Dashboard et routes authentifiées
@@ -143,6 +146,13 @@ Route::prefix('{locale}')
                 Route::get('/{id}', [AdSettingController::class, 'show'])->name('show')->where('id', '[0-9]+');
             });
             
+            // Routes pour la détection d'AdBlock
+            Route::prefix('adblock')->name('adblock.')->group(function () {
+                Route::get('/', [AdBlockController::class, 'index'])->name('index');
+                Route::put('/', [AdBlockController::class, 'update'])->name('update');
+                Route::get('/test', [AdBlockController::class, 'test'])->name('test');
+            });
+            
             // Gestion des templates d'outils
             Route::get('templates', [TemplateController::class, 'index'])->name('templates.index');
             Route::get('templates/{tool}/edit', [TemplateController::class, 'edit'])->name('templates.edit');
@@ -188,6 +198,37 @@ Route::prefix('{locale}')
 
         // Newsletter subscription
         Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+
+        // Route de diagnostic
+        Route::get('/diagnostic/categories', [DiagnosticController::class, 'checkCategories'])->name('diagnostic.categories');
+        Route::get('/diagnostic/category/{slug}', [DiagnosticController::class, 'testCategory'])->name('diagnostic.test-category')->where('slug', '[a-z0-9\-]+');
+        
+        // Route de test direct pour la vue category
+        Route::get('/diagnostic/view/category', function() {
+            $category = \App\Models\ToolCategory::where('slug', 'checker')->first();
+            if (!$category) {
+                return response()->json(['error' => 'Catégorie non trouvée'], 404);
+            }
+            
+            $tools = \App\Models\Tool::where('tool_category_id', $category->id)
+                ->where('is_active', true)
+                ->orderBy('order')
+                ->get();
+                
+            $adSettings = app(\App\Services\AdService::class)->getAdsForPage('category');
+            
+            $locale = app()->getLocale();
+            $pageTitle = $category->getName($locale);
+            $metaDescription = $category->getDescription($locale);
+            
+            return view('tools.category', [
+                'category' => $category,
+                'tools' => $tools,
+                'pageTitle' => $pageTitle,
+                'metaDescription' => $metaDescription,
+                'adSettings' => $adSettings,
+            ]);
+        })->name('diagnostic.view-category');
     });
 
 // Authentification (routes sans préfixe de langue)

@@ -7,6 +7,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
@@ -58,48 +59,69 @@ class SettingController extends Controller
             'tools_order' => 'required|string|in:asc,desc',
         ]);
         
-        // Gestion des images
-        $imageFields = [
-            'site_logo_light' => 'public/images/logo-light',
-            'site_logo_dark' => 'public/images/logo-dark',
-            'site_logo_email' => 'public/images/logo-email',
-            'site_favicon' => 'public/images',
-            'site_opengraph_image' => 'public/images/opengraph',
-            'site_home_cover' => 'public/images/covers',
-        ];
-        
-        foreach ($imageFields as $field => $path) {
-            if ($request->hasFile($field)) {
-                $filePath = $request->file($field)->store($path);
-                Setting::set($field, Storage::url($filePath), 'general', true, false);
+        try {
+            // Démarrer une transaction pour garantir que toutes les modifications sont appliquées ou aucune
+            DB::beginTransaction();
+            
+            // Gestion des images
+            $imageFields = [
+                'site_logo_light' => 'public/images/logo-light',
+                'site_logo_dark' => 'public/images/logo-dark',
+                'site_logo_email' => 'public/images/logo-email',
+                'site_favicon' => 'public/images',
+                'site_opengraph_image' => 'public/images/opengraph',
+                'site_home_cover' => 'public/images/covers',
+            ];
+            
+            foreach ($imageFields as $field => $path) {
+                if ($request->hasFile($field)) {
+                    $filePath = $request->file($field)->store($path);
+                    Setting::set($field, Storage::url($filePath), 'general', true, false);
+                }
             }
+            
+            // Mise à jour des autres paramètres
+            $settings = [
+                'site_name' => $request->site_name,
+                'site_description' => $request->site_description,
+                'meta_title' => $request->meta_title,
+                'meta_description' => $request->meta_description,
+                'meta_keywords' => $request->meta_keywords,
+                'meta_author' => $request->meta_author,
+                'contact_email' => $request->contact_email,
+                'google_analytics_id' => $request->google_analytics_id,
+                'facebook_pixel_id' => $request->facebook_pixel_id,
+                'enable_cookie_banner' => $request->has('enable_cookie_banner') ? 1 : 0,
+                'enable_dark_mode' => $request->has('enable_dark_mode') ? 1 : 0,
+                'default_timezone' => $request->default_timezone,
+                'default_locale' => $request->default_locale,
+                'tools_per_page' => $request->tools_per_page,
+                'tools_order' => $request->tools_order,
+            ];
+            
+            foreach ($settings as $key => $value) {
+                Setting::set($key, $value, 'general', true, false);
+            }
+            
+            // Confirmer la transaction
+            DB::commit();
+            
+            return redirect()->route('admin.settings.general', ['locale' => app()->getLocale()])
+                ->with('success', __('Les paramètres généraux ont été mis à jour avec succès.'));
+                
+        } catch (\Exception $e) {
+            // En cas d'erreur, annuler la transaction
+            DB::rollback();
+            
+            // Journaliser l'erreur
+            \Log::error('Erreur lors de la mise à jour des paramètres généraux', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->route('admin.settings.general', ['locale' => app()->getLocale()])
+                ->with('error', __('Une erreur est survenue lors de la mise à jour des paramètres généraux. Veuillez réessayer.'));
         }
-        
-        // Mise à jour des autres paramètres
-        $settings = [
-            'site_name' => $request->site_name,
-            'site_description' => $request->site_description,
-            'meta_title' => $request->meta_title,
-            'meta_description' => $request->meta_description,
-            'meta_keywords' => $request->meta_keywords,
-            'meta_author' => $request->meta_author,
-            'contact_email' => $request->contact_email,
-            'google_analytics_id' => $request->google_analytics_id,
-            'facebook_pixel_id' => $request->facebook_pixel_id,
-            'enable_cookie_banner' => $request->has('enable_cookie_banner') ? 1 : 0,
-            'enable_dark_mode' => $request->has('enable_dark_mode') ? 1 : 0,
-            'default_timezone' => $request->default_timezone,
-            'default_locale' => $request->default_locale,
-            'tools_per_page' => $request->tools_per_page,
-            'tools_order' => $request->tools_order,
-        ];
-        
-        foreach ($settings as $key => $value) {
-            Setting::set($key, $value, 'general', true, false);
-        }
-        
-        return redirect()->route('admin.settings.general', ['locale' => app()->getLocale()])
-            ->with('success', __('Les paramètres généraux ont été mis à jour avec succès.'));
     }
     
     /**

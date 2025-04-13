@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class Setting extends Model
 {
@@ -16,56 +17,11 @@ class Setting extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'site_name',
-        'site_description',
-        'contact_email',
-        'default_timezone',
-        'default_locale',
-        'tools_per_page',
-        'tools_order',
-        
-        'meta_title',
-        'meta_description',
-        'meta_keywords',
-        'meta_author',
-        'opengraph_image',
-        
-        'logo_light',
-        'logo_dark',
-        'logo_email',
-        'favicon',
-        'homepage_cover',
-        
-        'google_analytics_id',
-        'facebook_pixel_id',
-        'cookie_banner_enabled',
-        'dark_mode_enabled',
-        
-        'maintenance_mode',
-        'maintenance_message',
-        'maintenance_end_date',
-        'maintenance_allowed_ips',
-        
-        'sitemap_auto_generation',
-        'sitemap_include_tools',
-        'sitemap_include_blog',
-        'sitemap_frequency',
-        'sitemap_priority',
-        'sitemap_last_generated',
-        
-        'company_name',
-        'company_registration_number',
-        'company_vat_number',
-        'company_address',
-        'company_phone',
-        'company_email',
-        'company_opening_hours',
-        
-        'social_facebook',
-        'social_twitter',
-        'social_instagram',
-        'social_linkedin',
-        'social_youtube',
+        'group',
+        'key',
+        'value',
+        'is_public',
+        'is_translatable'
     ];
 
     /**
@@ -74,16 +30,8 @@ class Setting extends Model
      * @var array
      */
     protected $casts = [
-        'maintenance_mode' => 'boolean',
-        'cookie_banner_enabled' => 'boolean',
-        'dark_mode_enabled' => 'boolean',
-        'sitemap_auto_generation' => 'boolean',
-        'sitemap_include_tools' => 'boolean',
-        'sitemap_include_blog' => 'boolean',
-        'maintenance_end_date' => 'datetime',
-        'sitemap_last_generated' => 'datetime',
-        'sitemap_priority' => 'float',
-        'tools_per_page' => 'integer',
+        'is_public' => 'boolean',
+        'is_translatable' => 'boolean'
     ];
 
     /**
@@ -115,7 +63,18 @@ class Setting extends Model
             $result = [];
 
             foreach ($settings as $setting) {
-                $result[$setting->key] = $setting->value;
+                $value = $setting->value;
+                
+                // Tenter de décoder les valeurs JSON
+                if (is_string($value)) {
+                    $decoded = json_decode($value, true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $result[$setting->key] = $decoded;
+                        continue;
+                    }
+                }
+                
+                $result[$setting->key] = $value;
             }
 
             return $result;
@@ -135,7 +94,22 @@ class Setting extends Model
 
         return Cache::remember($cacheKey, self::$cacheTime, function () use ($key, $default) {
             $setting = self::where('key', $key)->first();
-            return $setting ? $setting->value : $default;
+            
+            if (!$setting) {
+                return $default;
+            }
+            
+            // Tenter de décoder les valeurs JSON
+            $value = $setting->value;
+            
+            if (is_string($value)) {
+                $decoded = json_decode($value, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $decoded;
+                }
+            }
+            
+            return $value;
         });
     }
 
@@ -151,22 +125,38 @@ class Setting extends Model
      */
     public static function set(string $key, $value, string $group = 'general', bool $isPublic = false, bool $isTranslatable = false): self
     {
-        $setting = self::updateOrCreate(
-            ['key' => $key],
-            [
+        try {
+            // Convertir les valeurs non-scalaires en JSON
+            if (is_array($value) || is_object($value)) {
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+            }
+            
+            $setting = self::updateOrCreate(
+                ['key' => $key],
+                [
+                    'group' => $group,
+                    'value' => $value,
+                    'is_public' => $isPublic,
+                    'is_translatable' => $isTranslatable,
+                ]
+            );
+
+            // Effacer le cache
+            Cache::forget(self::$cachePrefix . 'key_' . $key);
+            Cache::forget(self::$cachePrefix . 'group_' . $group);
+            Cache::forget(self::$cachePrefix . 'all');
+
+            return $setting;
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la sauvegarde du paramètre', [
+                'key' => $key,
                 'group' => $group,
-                'value' => $value,
-                'is_public' => $isPublic,
-                'is_translatable' => $isTranslatable,
-            ]
-        );
-
-        // Effacer le cache
-        Cache::forget(self::$cachePrefix . 'key_' . $key);
-        Cache::forget(self::$cachePrefix . 'group_' . $group);
-        Cache::forget(self::$cachePrefix . 'all');
-
-        return $setting;
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            throw $e;
+        }
     }
 
     /**
@@ -240,15 +230,46 @@ class Setting extends Model
         $settings = self::first();
         
         if (!$settings) {
-            $settings = self::create([
-                'site_name' => 'WebTools',
-                'default_timezone' => 'UTC',
-                'default_locale' => 'fr',
-                'tools_per_page' => 12,
-                'tools_order' => 'DESC',
-                'sitemap_frequency' => 'weekly',
-                'sitemap_priority' => 0.8,
-            ]);
+            try {
+                DB::beginTransaction();
+                
+                // Créer le paramètre de base du site
+                $settings = self::create([
+                    'key' => 'site_name',
+                    'group' => 'general',
+                    'value' => 'WebTools',
+                    'is_public' => true,
+                    'is_translatable' => false
+                ]);
+                
+                // Ajouter d'autres paramètres par défaut
+                self::set('site_description', 'Une plateforme d\'outils web gratuits', 'general', true, true);
+                self::set('default_timezone', 'UTC', 'general', true, false);
+                self::set('default_locale', 'fr', 'general', true, false);
+                self::set('tools_per_page', 12, 'general', true, false);
+                self::set('tools_order', 'DESC', 'general', true, false);
+                self::set('contact_email', 'contact@example.com', 'general', true, false);
+                
+                // Paramètres de maintenance
+                self::set('maintenance_mode', 0, 'maintenance', true, false);
+                self::set('maintenance_message', 'Site en maintenance', 'maintenance', true, true);
+                
+                // Paramètres SEO
+                self::set('meta_title', 'WebTools - Outils web gratuits', 'general', true, true);
+                self::set('meta_description', 'Une collection d\'outils web gratuits', 'general', true, true);
+                
+                DB::commit();
+                
+            } catch (\Exception $e) {
+                DB::rollback();
+                
+                \Log::error('Erreur lors de la création des paramètres par défaut', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                
+                throw $e;
+            }
         }
         
         return $settings;

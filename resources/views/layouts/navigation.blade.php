@@ -76,7 +76,7 @@
                                 <!-- Grid -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                     <!-- Checker Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.checker') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'checker']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-check-circle text-3xl text-purple-500 group-hover:text-purple-600"></i>
                                         </div>
@@ -85,7 +85,7 @@
                                     </a>
 
                                     <!-- Text Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.text') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'text']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-font text-3xl text-purple-500 group-hover:text-purple-600"></i>
                                         </div>
@@ -94,7 +94,7 @@
                                     </a>
 
                                     <!-- Converter Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.converter') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'converter']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-exchange-alt text-3xl text-green-500 group-hover:text-green-600"></i>
                                         </div>
@@ -103,7 +103,7 @@
                                     </a>
 
                                     <!-- Generator Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.generator') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'generator']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-magic text-3xl text-blue-500 group-hover:text-blue-600"></i>
                                         </div>
@@ -112,7 +112,7 @@
                                     </a>
 
                                     <!-- Developer Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.developer') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'developer']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-code text-3xl text-indigo-500 group-hover:text-indigo-600"></i>
                                         </div>
@@ -121,7 +121,7 @@
                                     </a>
 
                                     <!-- Image Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.image') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'image']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-image text-3xl text-orange-500 group-hover:text-orange-600"></i>
                                         </div>
@@ -130,7 +130,7 @@
                                     </a>
 
                                     <!-- Unit Converter -->
-                                    <a href="{{ URL::localizedRoute('tools.unit') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'unit']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-ruler text-3xl text-pink-500 group-hover:text-pink-600"></i>
                                         </div>
@@ -139,7 +139,7 @@
                                     </a>
 
                                     <!-- Time Converter -->
-                                    <a href="{{ URL::localizedRoute('tools.time') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'time']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-clock text-3xl text-teal-500 group-hover:text-teal-600"></i>
                                         </div>
@@ -148,7 +148,7 @@
                                     </a>
 
                                     <!-- Data Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.data') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'data']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-database text-3xl text-yellow-500 group-hover:text-yellow-600"></i>
                                         </div>
@@ -157,7 +157,7 @@
                                     </a>
 
                                     <!-- Color Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.color') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'color']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-palette text-3xl text-red-500 group-hover:text-red-600"></i>
                                         </div>
@@ -166,7 +166,7 @@
                                     </a>
 
                                     <!-- Misc Tools -->
-                                    <a href="{{ URL::localizedRoute('tools.misc') }}" class="tool-category">
+                                    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'misc']) }}" class="tool-category">
                                         <div class="tool-icon-wrapper">
                                             <i class="fas fa-ellipsis-h text-3xl text-gray-500 group-hover:text-gray-600"></i>
                                         </div>

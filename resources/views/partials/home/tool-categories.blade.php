@@ -1,7 +1,7 @@
 <!-- Catégories d'outils -->
 <div id="tools" class="space-y-4 mb-16">
     <!-- Checker Tools -->
-    <a href="{{ URL::localizedRoute('tools.checker') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'checker']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-purple-100 text-purple-600">
                 <i class="fas fa-check-circle text-xl"></i>
@@ -17,7 +17,7 @@
     </a>
 
     <!-- Text Tools -->
-    <a href="{{ URL::localizedRoute('tools.text') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'text']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-gray-100 text-gray-600">
                 <i class="fas fa-font text-xl"></i>
@@ -33,7 +33,7 @@
     </a>
 
     <!-- Converter Tools -->
-    <a href="{{ URL::localizedRoute('tools.converter') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'converter']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-green-100 text-green-600">
                 <i class="fas fa-exchange-alt text-xl"></i>
@@ -49,7 +49,7 @@
     </a>
 
     <!-- Generator Tools -->
-    <a href="{{ URL::localizedRoute('tools.generator') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'generator']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
                 <i class="fas fa-magic text-xl"></i>
@@ -65,7 +65,7 @@
     </a>
 
     <!-- Developer Tools -->
-    <a href="{{ URL::localizedRoute('tools.developer') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'developer']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600">
                 <i class="fas fa-code text-xl"></i>
@@ -81,7 +81,7 @@
     </a>
 
     <!-- Image Tools -->
-    <a href="{{ URL::localizedRoute('tools.image') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'image']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-orange-100 text-orange-600">
                 <i class="fas fa-image text-xl"></i>
@@ -97,7 +97,7 @@
     </a>
 
     <!-- Unit Converter -->
-    <a href="{{ URL::localizedRoute('tools.unit') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'unit']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-pink-100 text-pink-600">
                 <i class="fas fa-ruler text-xl"></i>
@@ -113,7 +113,7 @@
     </a>
 
     <!-- Time Converter -->
-    <a href="{{ URL::localizedRoute('tools.time') }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+    <a href="{{ URL::localizedRoute('tools.category', ['slug' => 'time']) }}" class="block bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
         <div class="p-6 flex items-center">
             <span class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-teal-100 text-teal-600">
                 <i class="fas fa-clock text-xl"></i>

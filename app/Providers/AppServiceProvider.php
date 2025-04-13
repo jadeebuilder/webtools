@@ -38,13 +38,13 @@ class AppServiceProvider extends ServiceProvider
             // Générer l'URL avec la locale
             return URL::route($name, $parameters, $absolute);
         });
+    }
+}
 
-        // Ajouter un helper global localizedRoute
-        if (!function_exists('localizedRoute')) {
-            function localizedRoute($name, $parameters = [], $absolute = true, $locale = null)
-            {
-                return URL::localizedRoute($name, $parameters, $absolute, $locale);
-            }
-        }
+// Ajouter un helper global localizedRoute
+if (!function_exists('localizedRoute')) {
+    function localizedRoute($name, $parameters = [], $absolute = true, $locale = null)
+    {
+        return URL::localizedRoute($name, $parameters, $absolute, $locale);
     }
 }
