@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Faq;
+use App\Models\Language;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -69,6 +71,20 @@ class HomeController extends Controller
             ]
         ];
 
-        return view('home', compact('popularTools', 'toolCategories'));
+        // Récupération des FAQs pour la page d'accueil
+        $locale = app()->getLocale();
+        $language = Language::where('code', $locale)->first();
+        
+        $faqs = Faq::with(['translations' => function($query) use ($language) {
+                if ($language) {
+                    $query->where('language_id', $language->id);
+                }
+            }])
+            ->active()
+            ->ordered()
+            ->take(4) // Limite à 4 FAQs sur la page d'accueil
+            ->get();
+
+        return view('home', compact('popularTools', 'toolCategories', 'faqs'));
     }
 }

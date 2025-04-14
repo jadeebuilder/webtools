@@ -4,16 +4,17 @@
     <p class="text-gray-600 text-center mb-8">{{ __('Got questions? We\'ve got answers.') }}</p>
 
     <div class="space-y-6 w-full" x-data="{ selected: null }">
-        <!-- FAQ Item 1 -->
+        @forelse($faqs as $index => $faq)
+        <!-- FAQ Item {{ $index + 1 }} -->
         <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-            <button @click="selected !== 1 ? selected = 1 : selected = null"
+            <button @click="selected !== {{ $index + 1 }} ? selected = {{ $index + 1 }} : selected = null"
                     class="flex justify-between items-center w-full p-6 text-left transition-colors duration-300 hover:bg-gray-50">
-                <span class="font-medium text-gray-900 text-lg">{{ __('Are all tools free to use?') }}</span>
+                <span class="font-medium text-gray-900 text-lg">{{ $faq->question }}</span>
                 <div class="ml-4 flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-colors duration-300">
-                    <i class="fas transition-transform duration-300" :class="selected === 1 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    <i class="fas transition-transform duration-300" :class="selected === {{ $index + 1 }} ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                 </div>
             </button>
-            <div x-show="selected === 1"
+            <div x-show="selected === {{ $index + 1 }}"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 transform -translate-y-2"
                  x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -21,31 +22,21 @@
                  x-transition:leave-start="opacity-100 transform translate-y-0"
                  x-transition:leave-end="opacity-0 transform -translate-y-2"
                  class="p-6 pt-0 text-gray-600">
-                {{ __('Yes, most of our tools are free to use. However, some advanced features require a Pro subscription.') }}
+                {!! $faq->answer !!}
             </div>
         </div>
-
-        <!-- FAQ Item 2 -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-            <button @click="selected !== 2 ? selected = 2 : selected = null"
-                    class="flex justify-between items-center w-full p-6 text-left transition-colors duration-300 hover:bg-gray-50">
-                <span class="font-medium text-gray-900 text-lg">{{ __('Do you offer API access?') }}</span>
-                <div class="ml-4 flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-colors duration-300">
-                    <i class="fas transition-transform duration-300" :class="selected === 2 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                </div>
-            </button>
-            <div x-show="selected === 2"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100 transform translate-y-0"
-                 x-transition:leave-end="opacity-0 transform -translate-y-2"
-                 class="p-6 pt-0 text-gray-600">
-                {{ __('Yes, API access is available with our Pro subscription. You can integrate our tools directly into your applications.') }}
-            </div>
+        @empty
+        <!-- Aucune FAQ trouvée -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6">
+            <p class="text-gray-600 text-center">{{ __('No FAQs available at the moment.') }}</p>
         </div>
+        @endforelse
 
-        <!-- Autres questions... -->
+        <div class="text-center mt-6">
+            <a href="{{ route('faq.index', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center text-primary hover:text-primary-dark transition-colors duration-300">
+                <span>{{ __('View all FAQs') }}</span>
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
     </div>
 </div> 

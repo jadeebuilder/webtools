@@ -25,6 +25,11 @@ class DatabaseSeeder extends Seeder
             ToolSeeder::class,
             AdSettingSeeder::class,
             ToolTemplateSectionSeeder::class,
+            FaqCategorySeeder::class,
+            FaqSeeder::class,
+            FaqCategoryTranslationsSeeder::class,
+            FaqTranslationsSeeder::class,
+            TestimonialsSeeder::class,
         ]);
     }
 }

@@ -42,6 +42,14 @@ class Language extends Model
     {
         return $this->hasMany(ToolTranslation::class, 'locale', 'code');
     }
+    
+    /**
+     * Obtenir les traductions de témoignages pour cette langue.
+     */
+    public function testimonialTranslations(): HasMany
+    {
+        return $this->hasMany(TestimonialTranslation::class);
+    }
 
     /**
      * Obtenir la langue par défaut.

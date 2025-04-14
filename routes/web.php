@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\AdTestController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdBlockController;
 use App\Http\Controllers\DiagnosticController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\HomeFaqController;
 
 /*
 |--------------------------------------------------------------------------
@@ -229,6 +231,40 @@ Route::prefix('{locale}')
                 'adSettings' => $adSettings,
             ]);
         })->name('diagnostic.view-category');
+
+        // Routes pour la FAQ en frontend
+        Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+        Route::get('/faq/{slug}', [FaqController::class, 'category'])->name('faq.category');
+
+        // Route pour la page de contact
+        Route::get('/contact', function () {
+            return view('pages.contact');
+        })->name('contact');
+        
+        // Routes pour la FAQ dans l'administration
+        Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+            // FAQ Categories
+            Route::resource('faq_categories', App\Http\Controllers\Admin\FaqCategoryController::class, [
+                'except' => ['show']
+            ]);
+            Route::put('faq_categories/update-order', [App\Http\Controllers\Admin\FaqCategoryController::class, 'updateOrder'])->name('faq_categories.update-order');
+            
+            // Gestion des FAQ
+            Route::resource('faq', App\Http\Controllers\Admin\FaqController::class, [
+                'except' => ['show']
+            ]);
+            Route::put('faq/update-order', [App\Http\Controllers\Admin\FaqController::class, 'updateOrder'])->name('faq.update-order');
+            
+            // Routes des témoignages
+            Route::get('/testimonials', [App\Http\Controllers\Admin\TestimonialController::class, 'index'])->name('testimonials.index');
+            Route::get('/testimonials/create', [App\Http\Controllers\Admin\TestimonialController::class, 'create'])->name('testimonials.create');
+            Route::post('/testimonials', [App\Http\Controllers\Admin\TestimonialController::class, 'store'])->name('testimonials.store');
+            Route::get('/testimonials/moderation', [App\Http\Controllers\Admin\TestimonialController::class, 'moderation'])->name('testimonials.moderation');
+            Route::get('/testimonials/{testimonial}/edit', [App\Http\Controllers\Admin\TestimonialController::class, 'edit'])->name('testimonials.edit');
+            Route::put('/testimonials/{testimonial}', [App\Http\Controllers\Admin\TestimonialController::class, 'update'])->name('testimonials.update');
+            Route::delete('/testimonials/{testimonial}', [App\Http\Controllers\Admin\TestimonialController::class, 'destroy'])->name('testimonials.destroy');
+            Route::patch('/testimonials/{testimonial}/toggle-status', [App\Http\Controllers\Admin\TestimonialController::class, 'toggleStatus'])->name('testimonials.toggle-status');
+        });
     });
 
 // Authentification (routes sans préfixe de langue)

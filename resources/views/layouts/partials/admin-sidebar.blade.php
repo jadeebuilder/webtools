@@ -319,34 +319,34 @@
                 </li>
                 
                 <!-- FAQ -->
-                <li x-data="{ faqOpen: false }">
+                <li x-data="{ faqOpen: {{ request()->routeIs('admin.faq.*') || request()->routeIs('admin.faq_categories.*') ? 'true' : 'false' }} }" x-init="faqOpen = {{ request()->routeIs('admin.faq.*') || request()->routeIs('admin.faq_categories.*') ? 'true' : 'false' }}">
                     <button @click="faqOpen = !faqOpen" 
-                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700">
+                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700 {{ request()->routeIs('admin.faq.*') || request()->routeIs('admin.faq_categories.*') ? 'active' : '' }}">
                         <div class="flex items-center">
-                            <i class="fas fa-question-circle text-xl sidebar-icon text-gray-500"></i>
+                            <i class="fas fa-question-circle text-xl sidebar-icon {{ request()->routeIs('admin.faq.*') || request()->routeIs('admin.faq_categories.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                             <span class="ml-3" x-show="open">{{ __('FAQ') }}</span>
                         </div>
                         <i class="fas" :class="faqOpen ? 'fa-chevron-down' : 'fa-chevron-right'" x-show="open"></i>
                     </button>
                     <ul x-show="faqOpen" class="mt-1 ml-6 space-y-1">
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-list text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.faq.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.faq.index') ? 'active' : '' }}">
+                                <i class="fas fa-list text-lg sidebar-icon {{ request()->routeIs('admin.faq.index') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Liste des FAQ') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-plus-circle text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.faq.create', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.faq.create') ? 'active' : '' }}">
+                                <i class="fas fa-plus-circle text-lg sidebar-icon {{ request()->routeIs('admin.faq.create') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Ajouter une FAQ') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-th-large text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.faq_categories.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.faq_categories.*') ? 'active' : '' }}">
+                                <i class="fas fa-th-large text-lg sidebar-icon {{ request()->routeIs('admin.faq_categories.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Catégories de FAQ') }}</span>
                             </a>
                         </li>
@@ -389,34 +389,34 @@
                 </li>
                 
                 <!-- TESTIMONIALS -->
-                <li x-data="{ testimonialsOpen: false }">
+                <li x-data="{ testimonialsOpen: {{ request()->routeIs('admin.testimonials.*') ? 'true' : 'false' }} }" x-init="testimonialsOpen = {{ request()->routeIs('admin.testimonials.*') ? 'true' : 'false' }}">
                     <button @click="testimonialsOpen = !testimonialsOpen" 
-                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700">
+                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700 {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
                         <div class="flex items-center">
-                            <i class="fas fa-comment-dots text-xl sidebar-icon text-gray-500"></i>
+                            <i class="fas fa-comment-dots text-xl sidebar-icon {{ request()->routeIs('admin.testimonials.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                             <span class="ml-3" x-show="open">{{ __('TESTIMONIALS') }}</span>
                         </div>
                         <i class="fas" :class="testimonialsOpen ? 'fa-chevron-down' : 'fa-chevron-right'" x-show="open"></i>
                     </button>
                     <ul x-show="testimonialsOpen" class="mt-1 ml-6 space-y-1">
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-list text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.testimonials.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.testimonials.index') ? 'active' : '' }}">
+                                <i class="fas fa-list text-lg sidebar-icon {{ request()->routeIs('admin.testimonials.index') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Liste des témoignages') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-plus-circle text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.testimonials.create', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.testimonials.create') ? 'active' : '' }}">
+                                <i class="fas fa-plus-circle text-lg sidebar-icon {{ request()->routeIs('admin.testimonials.create') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Ajouter un témoignage') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-star text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.testimonials.moderation', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.testimonials.moderation') ? 'active' : '' }}">
+                                <i class="fas fa-star text-lg sidebar-icon {{ request()->routeIs('admin.testimonials.moderation') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Modération témoignages') }}</span>
                             </a>
                         </li>
