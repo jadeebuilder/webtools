@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             FaqCategoryTranslationsSeeder::class,
             FaqTranslationsSeeder::class,
             TestimonialsSeeder::class,
+            PackageSeeder::class,
         ]);
     }
 }

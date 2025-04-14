@@ -20,9 +20,11 @@ use App\Http\Controllers\Admin\ToolAdSettingController;
 use App\Http\Controllers\Admin\AdTestController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdBlockController;
+use App\Http\Controllers\Admin\PackageController as AdminPackageController;
 use App\Http\Controllers\DiagnosticController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeFaqController;
+use App\Http\Controllers\PackageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -265,6 +267,9 @@ Route::prefix('{locale}')
             Route::delete('/testimonials/{testimonial}', [App\Http\Controllers\Admin\TestimonialController::class, 'destroy'])->name('testimonials.destroy');
             Route::patch('/testimonials/{testimonial}/toggle-status', [App\Http\Controllers\Admin\TestimonialController::class, 'toggleStatus'])->name('testimonials.toggle-status');
         });
+
+        // Packages
+        Route::get('packages', [App\Http\Controllers\PackageController::class, 'index'])->name('packages');
     });
 
 // Authentification (routes sans préfixe de langue)
@@ -273,4 +278,13 @@ require __DIR__ . '/auth.php';
 // Route de test pour vérifier notre helper
 Route::get('/test-helper', function () {
     return view('test-helper');
+});
+
+// Administration
+Route::prefix('{locale}/admin')->middleware(['auth', 'admin', 'set.locale'])->name('admin.')->group(function () {
+    // Gestion des packages
+    Route::resource('packages', AdminPackageController::class);
+    Route::post('packages/generate-slug', [AdminPackageController::class, 'generateSlug'])->name('packages.generate-slug');
+    Route::put('packages/{package}/toggle-status', [AdminPackageController::class, 'toggleStatus'])->name('packages.toggle-status');
+    Route::get('packages-configuration', [AdminPackageController::class, 'configuration'])->name('packages.configuration');
 });

@@ -71,5 +71,6 @@ class Kernel extends HttpKernel
         'localize.auth' => \App\Http\Middleware\LocalizeAuthRoutes::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'maintenance' => \App\Http\Middleware\CheckMaintenanceMode::class,
+        'set.locale' => \App\Http\Middleware\SetLocaleMiddleware::class,
     ];
 }

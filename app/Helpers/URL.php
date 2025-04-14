@@ -27,6 +27,16 @@ class URL
         // Assurez-vous que 'locale' est dans les paramètres et a priorité sur toute valeur existante
         $parameters['locale'] = $locale;
 
+        // Vérifier si la route existe
+        if (!Route::has($name)) {
+            // Si la route n'existe pas, essayez de fallback sur la route 'home'
+            if (Route::has('home')) {
+                return route('home', $parameters, $absolute);
+            }
+            // Si même 'home' n'existe pas, retournez la racine du site
+            return url('/');
+        }
+
         // Générer l'URL
         return route($name, $parameters, $absolute);
     }

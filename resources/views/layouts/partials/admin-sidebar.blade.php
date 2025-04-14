@@ -354,35 +354,28 @@
                 </li>
                 
                 <!-- PACKAGES -->
-                <li x-data="{ packagesOpen: false }">
+                <li x-data="{ packagesOpen: {{ request()->routeIs('admin.packages.*') ? 'true' : 'false' }} }" x-init="packagesOpen = {{ request()->routeIs('admin.packages.*') ? 'true' : 'false' }}">
                     <button @click="packagesOpen = !packagesOpen" 
-                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700">
+                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700 {{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
                         <div class="flex items-center">
-                            <i class="fas fa-box text-xl sidebar-icon text-gray-500"></i>
+                            <i class="fas fa-box text-xl sidebar-icon {{ request()->routeIs('admin.packages.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                             <span class="ml-3" x-show="open">{{ __('PACKAGES') }}</span>
                         </div>
                         <i class="fas" :class="packagesOpen ? 'fa-chevron-down' : 'fa-chevron-right'" x-show="open"></i>
                     </button>
                     <ul x-show="packagesOpen" class="mt-1 ml-6 space-y-1">
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-list text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.packages.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.packages.index') ? 'active' : '' }}">
+                                <i class="fas fa-list text-lg sidebar-icon {{ request()->routeIs('admin.packages.index') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Liste des packages') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-plus-circle text-lg sidebar-icon text-gray-500"></i>
+                            <a href="{{ route('admin.packages.create', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.packages.create') ? 'active' : '' }}">
+                                <i class="fas fa-plus-circle text-lg sidebar-icon {{ request()->routeIs('admin.packages.create') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Ajouter un package') }}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-cogs text-lg sidebar-icon text-gray-500"></i>
-                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Configuration packages') }}</span>
                             </a>
                         </li>
                     </ul>
