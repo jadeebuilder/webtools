@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
@@ -19,11 +20,13 @@ class SettingController extends Controller
         $settings = Setting::getByGroup('general');
         $timezones = \DateTimeZone::listIdentifiers();
         $available_locales = config('app.available_locales', []);
+        $currencies = Currency::orderBy('name')->get();
         
         return view('admin.settings.general', [
             'settings' => $settings,
             'timezones' => $timezones,
             'available_locales' => $available_locales,
+            'currencies' => $currencies,
             'title' => __('Paramètres généraux'),
             'pageTitle' => __('Paramètres généraux') . ' - ' . config('app.name'),
             'metaDescription' => __('Gérer les paramètres généraux du site')
@@ -55,6 +58,7 @@ class SettingController extends Controller
             'enable_dark_mode' => 'nullable|boolean',
             'default_timezone' => 'required|string|in:' . implode(',', \DateTimeZone::listIdentifiers()),
             'default_locale' => 'required|string|in:' . implode(',', array_keys(config('app.available_locales', ['fr' => 'Français']))),
+            'default_currency' => 'required|exists:currencies,id',
             'tools_per_page' => 'required|integer|min:6|max:100',
             'tools_order' => 'required|string|in:asc,desc',
         ]);
@@ -95,6 +99,7 @@ class SettingController extends Controller
                 'enable_dark_mode' => $request->has('enable_dark_mode') ? 1 : 0,
                 'default_timezone' => $request->default_timezone,
                 'default_locale' => $request->default_locale,
+                'default_currency' => $request->default_currency,
                 'tools_per_page' => $request->tools_per_page,
                 'tools_order' => $request->tools_order,
             ];
@@ -285,6 +290,7 @@ class SettingController extends Controller
                 'contact_email' => 'contact@example.com',
                 'default_timezone' => 'Europe/Paris',
                 'default_locale' => 'fr',
+                'default_currency' => Currency::where('code', 'EUR')->first()->id ?? 1,
                 'tools_per_page' => 12,
                 'tools_order' => 'DESC',
                 'meta_title' => 'WebTools - Outils web gratuits',

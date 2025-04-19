@@ -87,7 +87,7 @@ class Faq extends Model
      */
     public function getQuestion(): string
     {
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         $currentLanguage = app()->getLocale();
         
         // Vérifier d'abord la langue actuelle
@@ -125,7 +125,7 @@ class Faq extends Model
      */
     public function getAnswer(): string
     {
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         $currentLanguage = app()->getLocale();
         
         // Vérifier d'abord la langue actuelle

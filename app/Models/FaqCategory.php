@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 
 class FaqCategory extends Model
 {
@@ -97,7 +97,7 @@ class FaqCategory extends Model
      */
     public function getName(): string
     {
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         $currentLanguage = app()->getLocale();
         
         // Vérifier d'abord la langue actuelle
@@ -135,7 +135,7 @@ class FaqCategory extends Model
      */
     public function getDescription(): ?string
     {
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         $currentLanguage = app()->getLocale();
         
         // Vérifier d'abord la langue actuelle
@@ -173,7 +173,7 @@ class FaqCategory extends Model
      */
     public function getSlug(): string
     {
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         $currentLanguage = app()->getLocale();
         
         // Vérifier d'abord la langue actuelle

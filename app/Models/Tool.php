@@ -46,6 +46,26 @@ class Tool extends Model
     }
 
     /**
+     * Obtenir les types d'outils associés.
+     */
+    public function types(): BelongsToMany
+    {
+        return $this->belongsToMany(ToolType::class, 'tool_type_tools')
+            ->withTimestamps();
+    }
+
+    /**
+     * Vérifier si cet outil appartient à un type spécifique.
+     *
+     * @param string $typeSlug
+     * @return bool
+     */
+    public function hasType(string $typeSlug): bool
+    {
+        return $this->types()->where('slug', $typeSlug)->exists();
+    }
+
+    /**
      * Obtenir les plans auxquels cet outil est associé.
      */
     public function plans(): BelongsToMany
@@ -89,7 +109,7 @@ class Tool extends Model
         }
         
         // Fallback à la langue par défaut si la traduction n'existe pas
-        $defaultLocale = Language::where('is_default', true)->first()->code ?? 'fr';
+        $defaultLocale = SiteLanguage::where('is_default', true)->first()->code ?? 'fr';
         $defaultTranslation = $this->getTranslation($defaultLocale);
         
         return $defaultTranslation ? $defaultTranslation->name : $this->slug;
@@ -111,7 +131,7 @@ class Tool extends Model
         }
         
         // Fallback à la langue par défaut si la traduction n'existe pas
-        $defaultLocale = Language::where('is_default', true)->first()->code ?? 'fr';
+        $defaultLocale = SiteLanguage::where('is_default', true)->first()->code ?? 'fr';
         $defaultTranslation = $this->getTranslation($defaultLocale);
         
         return $defaultTranslation ? $defaultTranslation->description : null;

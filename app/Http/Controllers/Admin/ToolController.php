@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tool;
 use App\Models\ToolCategory;
 use App\Models\ToolTranslation;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -56,7 +56,7 @@ class ToolController extends Controller
     public function create()
     {
         $categories = ToolCategory::where('is_active', true)->orderBy('order')->get();
-        $languages = Language::where('is_active', true)->get();
+        $languages = SiteLanguage::where('is_active', true)->get();
         
         return view('admin.tools.create', compact('categories', 'languages'));
     }
@@ -66,7 +66,7 @@ class ToolController extends Controller
      */
     public function store(Request $request)
     {
-        $defaultLocale = Language::where('is_default', true)->first()->code ?? 'fr';
+        $defaultLocale = SiteLanguage::where('is_default', true)->first()->code ?? 'fr';
         
         $validatedData = $request->validate([
             'slug' => 'required|unique:tools,slug|max:255|regex:/^[a-z0-9\-]+$/',
@@ -77,7 +77,7 @@ class ToolController extends Controller
             'order' => 'nullable|integer|min:0',
             'translations' => 'required|array',
             'translations.*' => 'required|array',
-            'translations.*.locale' => 'required|string|exists:languages,code',
+            'translations.*.locale' => 'required|string|exists:site_languages,code',
             'translations.*.name' => 'required|string|max:255',
             'translations.*.description' => 'required|string',
             'translations.*.meta_title' => 'nullable|string|max:70',
@@ -133,7 +133,7 @@ class ToolController extends Controller
     {
         $tool->load('translations', 'category');
         $categories = ToolCategory::where('is_active', true)->orderBy('order')->get();
-        $languages = Language::where('is_active', true)->get();
+        $languages = SiteLanguage::where('is_active', true)->get();
         
         // Organiser les traductions par locale pour un accès facile dans la vue
         $translations = $tool->translations->keyBy('locale')->toArray();
@@ -155,7 +155,7 @@ class ToolController extends Controller
             'order' => 'nullable|integer|min:0',
             'translations' => 'required|array',
             'translations.*' => 'required|array',
-            'translations.*.locale' => 'required|string|exists:languages,code',
+            'translations.*.locale' => 'required|string|exists:site_languages,code',
             'translations.*.name' => 'required|string|max:255',
             'translations.*.description' => 'required|string',
             'translations.*.meta_title' => 'nullable|string|max:70',

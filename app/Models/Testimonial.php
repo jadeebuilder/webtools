@@ -89,7 +89,7 @@ class Testimonial extends Model
      */
     public function getName(): string
     {
-        $currentLanguage = Language::where('code', app()->getLocale())->first();
+        $currentLanguage = SiteLanguage::where('code', app()->getLocale())->first();
         
         if ($currentLanguage) {
             $translation = $this->translations()->where('language_id', $currentLanguage->id)->first();
@@ -107,7 +107,7 @@ class Testimonial extends Model
      */
     public function getPosition(): string
     {
-        $currentLanguage = Language::where('code', app()->getLocale())->first();
+        $currentLanguage = SiteLanguage::where('code', app()->getLocale())->first();
         
         if ($currentLanguage) {
             $translation = $this->translations()->where('language_id', $currentLanguage->id)->first();
@@ -125,7 +125,7 @@ class Testimonial extends Model
      */
     public function getContent(): string
     {
-        $currentLanguage = Language::where('code', app()->getLocale())->first();
+        $currentLanguage = SiteLanguage::where('code', app()->getLocale())->first();
         
         if ($currentLanguage) {
             $translation = $this->translations()->where('language_id', $currentLanguage->id)->first();

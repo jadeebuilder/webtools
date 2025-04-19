@@ -72,15 +72,15 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900 dark:text-white">
                                             @if($package->monthly_price > 0)
-                                                <div><span class="font-medium">{{ __('Mensuel') }}:</span> {{ number_format($package->monthly_price, 2) }} €</div>
+                                                <div><span class="font-medium">{{ __('Mensuel') }}:</span> {!! $package->getFormattedMonthlyPrice() !!}</div>
                                             @endif
                                             
                                             @if($package->annual_price > 0)
-                                                <div><span class="font-medium">{{ __('Annuel') }}:</span> {{ number_format($package->annual_price, 2) }} €</div>
+                                                <div><span class="font-medium">{{ __('Annuel') }}:</span> {!! $package->getFormattedAnnualPrice() !!}</div>
                                             @endif
                                             
                                             @if($package->lifetime_price > 0)
-                                                <div><span class="font-medium">{{ __('À vie') }}:</span> {{ number_format($package->lifetime_price, 2) }} €</div>
+                                                <div><span class="font-medium">{{ __('À vie') }}:</span> {!! $package->getFormattedLifetimePrice() !!}</div>
                                             @endif
                                             
                                             @if($package->monthly_price == 0 && $package->annual_price == 0 && $package->lifetime_price == 0)
@@ -112,7 +112,7 @@
                                             <input 
                                                 type="checkbox" 
                                                 class="sr-only peer package-status-toggle" 
-                                                data-url="{{ route('admin.packages.toggle-status', ['locale' => app()->getLocale(), 'package' => $package->id]) }}"
+                                                data-url="{{ route('admin.packages.toggle-status', ['locale' => app()->getLocale(), 'id' => $package->id]) }}"
                                                 {{ $package->is_active ? 'checked' : '' }}
                                             >
                                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
@@ -123,10 +123,10 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center space-x-2">
-                                            <a href="{{ route('admin.packages.edit', ['locale' => app()->getLocale(), 'package' => $package->id]) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            <a href="{{ route('admin.packages.edit', ['locale' => app()->getLocale(), 'id' => $package->id]) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form method="POST" action="{{ route('admin.packages.destroy', ['locale' => app()->getLocale(), 'package' => $package->id]) }}" class="inline-block delete-form" data-name="{{ $package->getName() }}">
+                                            <form method="POST" action="{{ route('admin.packages.destroy', ['locale' => app()->getLocale(), 'id' => $package->id]) }}" class="inline-block delete-form" data-name="{{ $package->getName() }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">

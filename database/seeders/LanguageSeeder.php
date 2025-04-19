@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Database\Seeder;
 
 class LanguageSeeder extends Seeder
@@ -48,7 +48,7 @@ class LanguageSeeder extends Seeder
         ];
 
         foreach ($languages as $language) {
-            Language::updateOrCreate(
+            SiteLanguage::updateOrCreate(
                 ['code' => $language['code']],
                 $language
             );

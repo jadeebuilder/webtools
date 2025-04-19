@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
 use App\Models\TestimonialTranslation;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -47,7 +47,7 @@ class TestimonialController extends Controller
     {
         try {
             // Récupérer les langues actives directement depuis la base de données
-            $languages = DB::table('languages')
+            $languages = DB::table('site_languages')
                 ->where('is_active', true)
                 ->get();
             
@@ -148,7 +148,7 @@ class TestimonialController extends Controller
             }
             
             // Récupérer les langues actives
-            $languages = DB::table('languages')->where('is_active', true)->get();
+            $languages = DB::table('site_languages')->where('is_active', true)->get();
             
             // Récupérer les traductions
             $translations = DB::table('testimonial_translations')

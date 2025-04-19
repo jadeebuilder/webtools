@@ -61,6 +61,50 @@ CREATE TABLE `ad_settings` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cities` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `country_id` bigint unsigned NOT NULL,
+  `state_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_code` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `countries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `countries` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `iso2` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` tinyint NOT NULL DEFAULT '1',
+  `phone_code` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `iso3` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `region` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subregion` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `currencies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `currencies` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `country_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `precision` tinyint NOT NULL DEFAULT '2',
+  `symbol` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `symbol_native` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `symbol_first` tinyint NOT NULL DEFAULT '1',
+  `decimal_mark` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '.',
+  `thousands_separator` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ',',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `failed_jobs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -170,6 +214,83 @@ CREATE TABLE `migrations` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `package_tool_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `package_tool_types` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `package_id` bigint unsigned NOT NULL,
+  `tool_type_id` bigint unsigned NOT NULL,
+  `tools_limit` int unsigned NOT NULL DEFAULT '0' COMMENT 'Limite d''outils de ce type pour le package (0 = illimité)',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `package_tool_types_package_id_tool_type_id_unique` (`package_id`,`tool_type_id`),
+  KEY `package_tool_types_tool_type_id_foreign` (`tool_type_id`),
+  CONSTRAINT `package_tool_types_package_id_foreign` FOREIGN KEY (`package_id`) REFERENCES `packages` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `package_tool_types_tool_type_id_foreign` FOREIGN KEY (`tool_type_id`) REFERENCES `tool_types` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `package_tools`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `package_tools` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `package_id` bigint unsigned NOT NULL,
+  `tool_id` bigint unsigned NOT NULL,
+  `is_vip` tinyint(1) NOT NULL DEFAULT '0',
+  `is_ai` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `package_tools_package_id_tool_id_unique` (`package_id`,`tool_id`),
+  KEY `package_tools_tool_id_foreign` (`tool_id`),
+  CONSTRAINT `package_tools_package_id_foreign` FOREIGN KEY (`package_id`) REFERENCES `packages` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `package_tools_tool_id_foreign` FOREIGN KEY (`tool_id`) REFERENCES `tools` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `package_translations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `package_translations` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `package_id` bigint unsigned NOT NULL,
+  `locale` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `features` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `package_translations_package_id_locale_unique` (`package_id`,`locale`),
+  CONSTRAINT `package_translations_package_id_foreign` FOREIGN KEY (`package_id`) REFERENCES `packages` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `packages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `packages` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `color` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#660bab',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_default` tinyint(1) NOT NULL DEFAULT '0',
+  `show_ads` tinyint(1) NOT NULL DEFAULT '1',
+  `cycle_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'day, month, year, lifetime',
+  `cycle_count` int NOT NULL DEFAULT '1',
+  `monthly_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `annual_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `lifetime_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `has_trial` tinyint(1) NOT NULL DEFAULT '0',
+  `trial_days` int NOT NULL DEFAULT '0',
+  `trial_restrictions` json DEFAULT NULL,
+  `order` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `packages_slug_unique` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `password_reset_tokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -254,6 +375,27 @@ CREATE TABLE `settings` (
   KEY `settings_group_index` (`group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `site_languages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `site_languages` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `states`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `states` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `country_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_code` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `subscriptions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -310,6 +452,16 @@ CREATE TABLE `testimonials` (
   `order` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `timezones`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `timezones` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `country_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -416,6 +568,55 @@ CREATE TABLE `tool_translations` (
   CONSTRAINT `tool_translations_tool_id_foreign` FOREIGN KEY (`tool_id`) REFERENCES `tools` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tool_type_tools`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tool_type_tools` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `tool_id` bigint unsigned NOT NULL,
+  `tool_type_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tool_type_tools_tool_id_tool_type_id_unique` (`tool_id`,`tool_type_id`),
+  KEY `tool_type_tools_tool_type_id_foreign` (`tool_type_id`),
+  CONSTRAINT `tool_type_tools_tool_id_foreign` FOREIGN KEY (`tool_id`) REFERENCES `tools` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `tool_type_tools_tool_type_id_foreign` FOREIGN KEY (`tool_type_id`) REFERENCES `tool_types` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tool_type_translations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tool_type_translations` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `tool_type_id` bigint unsigned NOT NULL,
+  `locale` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tool_type_translations_tool_type_id_locale_unique` (`tool_type_id`,`locale`),
+  KEY `tool_type_translations_locale_index` (`locale`),
+  CONSTRAINT `tool_type_translations_tool_type_id_foreign` FOREIGN KEY (`tool_type_id`) REFERENCES `tool_types` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tool_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tool_types` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Identifiant unique du type d''outil',
+  `icon` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Classe d''icône (ex: fa-star)',
+  `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#000000' COMMENT 'Couleur hexadécimale associée au type',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Indique si le type est actif',
+  `order` smallint unsigned NOT NULL DEFAULT '0' COMMENT 'Ordre d''affichage',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tool_types_slug_unique` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tools`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -491,3 +692,19 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (40,'2023_05_26_000
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (41,'2023_05_26_000002_create_faq_translations_table',9);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (42,'2025_04_14_000001_create_testimonials_table',10);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (43,'2025_04_14_000002_create_testimonial_translations_table',10);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (44,'2023_05_20_000000_create_packages_table',11);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (45,'2023_05_20_000001_create_package_translations_table',11);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (46,'2023_05_20_000002_create_package_tools_table',11);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (47,'2025_04_14_200942_add_trial_fields_to_packages_table',12);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (48,'2025_04_14_200949_add_trial_fields_to_packages_table',12);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (49,'2025_04_18_154405_add_tool_limits_to_packages_table',13);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (50,'2025_04_18_154447_add_tool_limits_to_packages_table',13);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (51,'2025_05_20_create_tool_types_table',14);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (52,'2025_05_21_remove_tool_counts_from_packages_table',14);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (53,'2020_07_07_055656_create_countries_table',15);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (54,'2020_07_07_055725_create_cities_table',15);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (55,'2020_07_07_055746_create_timezones_table',15);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (56,'2021_10_19_071730_create_states_table',15);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (57,'2021_10_23_082414_create_currencies_table',15);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (58,'2025_04_19_130317_rename_languages_table_to_site_languages',16);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (59,'2025_04_19_132336_create_site_languages_table',17);

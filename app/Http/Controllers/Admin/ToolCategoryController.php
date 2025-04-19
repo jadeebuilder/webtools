@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ToolCategory;
 use App\Models\ToolCategoryTranslation;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -28,7 +28,7 @@ class ToolCategoryController extends Controller
      */
     public function create()
     {
-        $languages = Language::where('is_active', true)->get();
+        $languages = SiteLanguage::where('is_active', true)->get();
         
         return view('admin.tool-categories.create', compact('languages'));
     }
@@ -45,7 +45,7 @@ class ToolCategoryController extends Controller
             'order' => 'nullable|integer|min:0',
             'translations' => 'required|array',
             'translations.*' => 'required|array',
-            'translations.*.locale' => 'required|string|exists:languages,code',
+            'translations.*.locale' => 'required|string|exists:site_languages,code',
             'translations.*.name' => 'required|string|max:255',
             'translations.*.description' => 'required|string',
         ]);
@@ -87,7 +87,7 @@ class ToolCategoryController extends Controller
     public function edit(ToolCategory $toolCategory)
     {
         $toolCategory->load('translations');
-        $languages = Language::where('is_active', true)->get();
+        $languages = SiteLanguage::where('is_active', true)->get();
         
         // Organiser les traductions par locale pour un accès facile dans la vue
         $translations = $toolCategory->translations->keyBy('locale')->toArray();
@@ -107,7 +107,7 @@ class ToolCategoryController extends Controller
             'order' => 'nullable|integer|min:0',
             'translations' => 'required|array',
             'translations.*' => 'required|array',
-            'translations.*.locale' => 'required|string|exists:languages,code',
+            'translations.*.locale' => 'required|string|exists:site_languages,code',
             'translations.*.name' => 'required|string|max:255',
             'translations.*.description' => 'required|string',
         ]);

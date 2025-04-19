@@ -95,7 +95,7 @@
                         @if($isFreePlan || $monthlyPrice == 0)
                             {{ __('Gratuit') }}
                         @else
-                            {{ number_format($monthlyPrice, 2, ',', ' ') }}€<span class="text-base font-normal text-gray-600">{{ __('/mois') }}</span>
+                            {!! $package->getFormattedMonthlyPrice() !!}<span class="text-base font-normal text-gray-600">{{ __('/mois') }}</span>
                         @endif
                     </div>
                     
@@ -106,10 +106,13 @@
                         @elseif(!$hasAnnualPlan)
                             <span class="text-xl text-gray-500">{{ __('Non disponible') }}</span>
                         @else
-                            {{ number_format($annualPrice, 2, ',', ' ') }}€<span class="text-base font-normal text-gray-600">{{ __('/an') }}</span>
-                            @if($annualSavingsPercent > 0)
+                            {!! $package->getFormattedAnnualPrice() !!}<span class="text-base font-normal text-gray-600">{{ __('/an') }}</span>
+                            @php
+                                $annualSavings = $package->getAnnualSavings();
+                            @endphp
+                            @if($annualSavings['percent'] > 0)
                                 <div class="text-sm font-normal text-green-600 mt-1">
-                                    {{ __('Économisez') }} {{ number_format($annualSavings, 2, ',', ' ') }}€ ({{ $annualSavingsPercent }}%)
+                                    {{ __('Économisez') }} {!! $annualSavings['formatted'] !!} ({{ $annualSavings['percent'] }}%)
                                 </div>
                             @endif
                         @endif
@@ -122,10 +125,13 @@
                         @elseif(!$hasLifetimePlan)
                             <span class="text-xl text-gray-500">{{ __('Non disponible') }}</span>
                         @else
-                            {{ number_format($lifetimePrice, 2, ',', ' ') }}€<span class="text-base font-normal text-gray-600">{{ __(' à vie') }}</span>
-                            @if($lifetimeSavingsPercent > 0)
+                            {!! $package->getFormattedLifetimePrice() !!}<span class="text-base font-normal text-gray-600">{{ __(' à vie') }}</span>
+                            @php
+                                $lifetimeSavings = $package->getLifetimeSavings();
+                            @endphp
+                            @if($lifetimeSavings['percent'] > 0)
                                 <div class="text-sm font-normal text-green-600 mt-1">
-                                    {{ __('Économisez') }} {{ $lifetimeSavingsPercent }}% {{ __('sur 5 ans') }}
+                                    {{ __('Économisez') }} {{ $lifetimeSavings['percent'] }}% {{ __('sur 5 ans') }}
                                 </div>
                             @endif
                         @endif
@@ -138,37 +144,27 @@
                     @foreach($features as $featureIndex => $feature)
                         @if(!empty(trim($feature)))
                             <div class="flex items-center group-hover:scale-105 transition-transform duration-200">
-                                @if(strpos(strtolower($feature), 'outils') !== false || strpos(strtolower($feature), 'tools') !== false)
-                                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" style="background-color: {{ $headerColor }}20;">
-                                        <span class="text-sm font-semibold" style="color: {{ $textColor }}">{{ $toolsCount }}</span>
-                                    </div>
-                                @else
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                @endif
+                                <i class="fas fa-check text-green-500 mr-3"></i>
                                 <span class="flex-grow">{{ $feature }}</span>
                             </div>
                         @endif
                     @endforeach
                     
-                    @if($vipToolsCount > 0)
+                    <!-- Affichage dynamique des types d'outils -->
+                    @foreach($package->toolTypes as $toolType)
+                        @php
+                            $toolsCount = $package->getToolsCountByType($toolType->slug);
+                            $toolsLimit = $package->getToolsLimitByType($toolType->slug);
+                            $displayCount = $toolsLimit && $toolsLimit > 0 ? min($toolsCount, $toolsLimit) : $toolsCount;
+                        @endphp
                         <div class="flex items-center group-hover:scale-105 transition-transform duration-200">
-                            <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
-                                <span class="text-sm font-semibold text-yellow-600">{{ $vipToolsCount }}</span>
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" style="background-color: {{ $toolType->color }}20;">
+                                <span class="text-sm font-semibold" style="color: {{ $toolType->color }}">{{ $displayCount }}</span>
                             </div>
-                            <span class="flex-grow">{{ __('Outils VIP') }}</span>
+                            <span class="flex-grow">{{ $toolType->getName() }}</span>
                             <i class="fas fa-check text-green-500"></i>
                         </div>
-                    @endif
-                    
-                    @if($aiToolsCount > 0)
-                        <div class="flex items-center group-hover:scale-105 transition-transform duration-200">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                <span class="text-sm font-semibold text-blue-600">{{ $aiToolsCount }}</span>
-                            </div>
-                            <span class="flex-grow">{{ __('Outils IA') }}</span>
-                            <i class="fas fa-check text-green-500"></i>
-                        </div>
-                    @endif
+                    @endforeach
                 </div>
                 
                 <div class="mt-8 pt-6 border-t border-gray-100">
@@ -179,8 +175,8 @@
                         style="background-color: {{ $buttonColor }};">
                         @if($isFreePlan)
                             {{ __('Commencer gratuitement') }}
-                        @elseif($isPopular)
-                            {{ __('Commencer l\'essai') }}
+                        @elseif($package->has_trial)
+                            {{ __('Commencer l\'essai') }} ({{ $package->getTrialText() }})
                         @else
                             {{ __('Souscrire maintenant') }}
                         @endif
@@ -197,8 +193,8 @@
                             {{ __('Commencer gratuitement') }}
                         @elseif(!$hasAnnualPlan)
                             {{ __('Non disponible') }}
-                        @elseif($isPopular)
-                            {{ __('Économisez avec l\'abonnement annuel') }}
+                        @elseif($package->has_trial)
+                            {{ __('Commencer l\'essai') }} ({{ $package->getTrialText() }})
                         @else
                             {{ __('Souscrire à l\'année') }}
                         @endif

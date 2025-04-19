@@ -121,6 +121,28 @@ Route::prefix('{locale}')
             // Dashboard
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             
+            // Gestion des packages
+            Route::get('packages', [AdminPackageController::class, 'index'])->name('packages.index');
+            Route::get('packages/create', [AdminPackageController::class, 'create'])->name('packages.create');
+            Route::post('packages', [AdminPackageController::class, 'store'])->name('packages.store');
+            Route::get('packages/{id}', [AdminPackageController::class, 'show'])->name('packages.show');
+            Route::get('packages/{id}/edit', [AdminPackageController::class, 'edit'])->name('packages.edit');
+            Route::put('packages/{id}', [AdminPackageController::class, 'update'])->name('packages.update');
+            Route::delete('packages/{id}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
+            Route::post('packages/generate-slug', [AdminPackageController::class, 'generateSlug'])->name('packages.generate-slug');
+            Route::put('packages/{id}/toggle-status', [AdminPackageController::class, 'toggleStatus'])->name('packages.toggle-status');
+            Route::get('packages-configuration', [AdminPackageController::class, 'configuration'])->name('packages.configuration');
+            Route::put('packages-configuration', [AdminPackageController::class, 'updateConfiguration'])->name('packages.configuration.update');
+            
+            // Gestion des types d'outils
+            Route::get('tool-types', [App\Http\Controllers\Admin\ToolTypeController::class, 'index'])->name('tool-types.index');
+            Route::get('tool-types/create', [App\Http\Controllers\Admin\ToolTypeController::class, 'create'])->name('tool-types.create');
+            Route::post('tool-types', [App\Http\Controllers\Admin\ToolTypeController::class, 'store'])->name('tool-types.store');
+            Route::get('tool-types/{id}/edit', [App\Http\Controllers\Admin\ToolTypeController::class, 'edit'])->name('tool-types.edit');
+            Route::put('tool-types/{id}', [App\Http\Controllers\Admin\ToolTypeController::class, 'update'])->name('tool-types.update');
+            Route::delete('tool-types/{id}', [App\Http\Controllers\Admin\ToolTypeController::class, 'destroy'])->name('tool-types.destroy');
+            Route::post('tool-types/{id}/toggle-status', [App\Http\Controllers\Admin\ToolTypeController::class, 'toggleStatus'])->name('tool-types.toggle-status');
+            
             // Route de test pour le déboggage
             Route::get('/ads-test', function() {
                 return response()->json(['success' => true, 'message' => 'Route de test fonctionnelle']);
@@ -280,11 +302,3 @@ Route::get('/test-helper', function () {
     return view('test-helper');
 });
 
-// Administration
-Route::prefix('{locale}/admin')->middleware(['auth', 'admin', 'set.locale'])->name('admin.')->group(function () {
-    // Gestion des packages
-    Route::resource('packages', AdminPackageController::class);
-    Route::post('packages/generate-slug', [AdminPackageController::class, 'generateSlug'])->name('packages.generate-slug');
-    Route::put('packages/{package}/toggle-status', [AdminPackageController::class, 'toggleStatus'])->name('packages.toggle-status');
-    Route::get('packages-configuration', [AdminPackageController::class, 'configuration'])->name('packages.configuration');
-});

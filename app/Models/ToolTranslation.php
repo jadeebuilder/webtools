@@ -39,7 +39,7 @@ class ToolTranslation extends Model
      */
     public function language(): BelongsTo
     {
-        return $this->belongsTo(Language::class, 'locale', 'code');
+        return $this->belongsTo(SiteLanguage::class, 'locale', 'code');
     }
 
     /**

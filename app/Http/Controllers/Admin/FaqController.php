@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Faq;
 use App\Models\FaqCategory;
 use App\Models\FaqTranslation;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Http\Request;
 
 class FaqController extends Controller
@@ -27,7 +27,7 @@ class FaqController extends Controller
     public function create()
     {
         $categories = FaqCategory::active()->orderBy('name')->get();
-        $languages = Language::where('is_active', true)->get();
+        $languages = SiteLanguage::where('is_active', true)->get();
         
         return view('admin.faq.create', compact('categories', 'languages'));
     }
@@ -42,13 +42,13 @@ class FaqController extends Controller
             'is_active' => 'required|in:0,1',
             'order' => 'nullable|integer|min:0',
             'translations' => 'required|array',
-            'translations.*.language_id' => 'required|exists:languages,id',
+            'translations.*.language_id' => 'required|exists:site_languages,id',
             'translations.*.question' => 'required|string',
             'translations.*.answer' => 'required|string',
         ]);
         
         // Vérifier qu'au moins la langue par défaut est fournie
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         $hasDefaultTranslation = false;
         
         if (isset($validated['translations'])) {
@@ -102,7 +102,7 @@ class FaqController extends Controller
     public function edit(Faq $faq)
     {
         $categories = FaqCategory::active()->orderBy('name')->get();
-        $languages = Language::where('is_active', true)->get();
+        $languages = SiteLanguage::where('is_active', true)->get();
         $faq->load('translations');
         
         // Format translations for easier handling in the view
@@ -124,13 +124,13 @@ class FaqController extends Controller
             'is_active' => 'required|in:0,1',
             'order' => 'nullable|integer|min:0',
             'translations' => 'required|array',
-            'translations.*.language_id' => 'required|exists:languages,id',
+            'translations.*.language_id' => 'required|exists:site_languages,id',
             'translations.*.question' => 'required|string',
             'translations.*.answer' => 'required|string',
         ]);
         
         // Vérifier qu'au moins la langue par défaut est fournie
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         $hasDefaultTranslation = false;
         
         if (isset($validated['translations'])) {

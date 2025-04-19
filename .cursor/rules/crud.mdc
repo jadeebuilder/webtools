@@ -1,0 +1,120 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Structure générale des méthodes de contrôleur
+
+Signature des méthodes cohérente :
+
+Inclure le paramètre string $locale en premier pour toutes les méthodes de contrôleur
+Utiliser une approche flexible pour le paramètre du modèle (peut être un ID ou un objet)
+Exemple : public function edit(string $locale, $package)
+Traitement robuste des entrées :
+Vérifier systématiquement si le paramètre est un objet ou un ID
+Convertir si nécessaire : $itemId = is_object($item) ? $item->id : $item;
+Utilisation de DB::table pour vérifications simples :
+D'abord vérifier l'existence d'un enregistrement via DB::table pour plus de performance
+Ensuite charger le modèle Eloquent avec ses relations si nécessaire
+Gestion d'erreurs systématique :
+Entourer le code principal avec des blocs try/catch
+Journaliser les erreurs avec \Log::error()
+Rediriger proprement l'utilisateur avec des messages clairs
+
+Structure recommandée pour les méthodes CRUD
+
+public function edit(string $locale, $item)
+{
+    try {
+        // Vérifier si item est un ID ou un objet
+        $itemId = is_object($item) ? $item->id : $item;
+        
+        // Vérifier l'existence via DB
+        $itemData = DB::table('items')->where('id', $itemId)->first();
+        
+        if (!$itemData) {
+            return redirect()->route('admin.items.index', ['locale' => $locale])
+                ->with('error', __('Item introuvable'));
+        }
+        
+        // Charger le modèle avec ses relations
+        $itemModel = Item::find($itemId);
+        $itemModel->load('relations');
+        
+        // Préparer les données pour la vue
+        $additionalData = $this->prepareAdditionalData();
+        
+        // Retourner la vue
+        return view('admin.items.edit', [
+            'item' => $itemModel,
+            'additionalData' => $additionalData
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Erreur lors du chargement: ' . $e->getMessage());
+        
+        return redirect()->route('admin.items.index', ['locale' => $locale])
+            ->with('error', __('Impossible de charger l\'item. ') . $e->getMessage());
+    }
+}
+
+public function update(Request $request, string $locale, $item)
+{
+    try {
+        // Validation
+        $validatedData = $request->validate([
+            // Règles de validation
+        ]);
+        
+        // Obtenir l'ID
+        $itemId = is_object($item) ? $item->id : $item;
+        
+        // Récupérer le modèle
+        $itemModel = Item::findOrFail($itemId);
+        
+        DB::beginTransaction();
+        
+        try {
+            // Mise à jour du modèle
+            $itemModel->update([
+                // Données du modèle
+            ]);
+            
+            // Mise à jour des relations
+            
+            DB::commit();
+            
+            return redirect()->route('admin.items.index', ['locale' => $locale])
+                ->with('success', __('Item mis à jour avec succès!'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Erreur transaction: ' . $e->getMessage());
+            return back()->with('error', __('Erreur lors de la mise à jour: ') . $e->getMessage())->withInput();
+        }
+    } catch (\Exception $e) {
+        \Log::error('Erreur de validation: ' . $e->getMessage());
+        return back()->with('error', __('Erreur de validation: ') . $e->getMessage())->withInput();
+    }
+}
+
+
+Points clés pour le routage
+Définition des routes :
+Utiliser des noms de paramètres cohérents dans les routes et les contrôleurs
+Pour les routes resource : adapter manuellement si nécessaire pour correspondre aux signatures des méthodes
+Exemple : Route::get('items/{id}/edit', [ItemController::class, 'edit'])->name('items.edit');
+Réinitialiser le cache après les modifications :
+Toujours exécuter après des modifications :
+
+     php artisan view:clear
+     php artisan route:clear
+     php artisan cache:clear
+     php artisan optimize:clear
+
+Cette approche garantit une gestion robuste des requêtes, une meilleure gestion des erreurs et une expérience utilisateur améliorée, tout en maintenant une cohérence dans le codebase. Elle résout les problèmes courants de routage dans les applications Laravel multilingues et facilite la maintenance future.
+
+
+À retenir
+Toujours inclure string $locale comme premier paramètre
+Toujours vérifier si le paramètre est un ID ou un objet
+Toujours utiliser un bloc try/catch
+Utiliser Log::error() pour journaliser les erreur

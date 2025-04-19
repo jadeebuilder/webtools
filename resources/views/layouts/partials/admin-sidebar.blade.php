@@ -81,11 +81,11 @@
                 </li>
                 
                 <!-- Gestion des Outils -->
-                <li x-data="{ toolsOpen: {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.templates.*') ? 'true' : 'false' }} }" x-init="toolsOpen = {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.templates.*') ? 'true' : 'false' }}">
+                <li x-data="{ toolsOpen: {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.tool-types.*') || request()->routeIs('admin.templates.*') ? 'true' : 'false' }} }" x-init="toolsOpen = {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.tool-types.*') || request()->routeIs('admin.templates.*') ? 'true' : 'false' }}">
                     <button @click="toolsOpen = !toolsOpen" 
-                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700 {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.templates.*') ? 'active' : '' }}">
+                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700 {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.tool-types.*') || request()->routeIs('admin.templates.*') ? 'active' : '' }}">
                         <div class="flex items-center">
-                            <i class="fas fa-tools text-xl sidebar-icon {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.templates.*') ? 'text-primary' : 'text-gray-500' }}"></i>
+                            <i class="fas fa-tools text-xl sidebar-icon {{ request()->routeIs('admin.tools.*') || request()->routeIs('admin.tool-categories.*') || request()->routeIs('admin.tool-types.*') || request()->routeIs('admin.templates.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                             <span class="ml-3" x-show="open">{{ __('Gestion des Outils') }}</span>
                         </div>
                         <i class="fas" :class="toolsOpen ? 'fa-chevron-down' : 'fa-chevron-right'" x-show="open"></i>
@@ -110,6 +110,13 @@
                                class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.tool-categories.*') ? 'active' : '' }}">
                                 <i class="fas fa-th-large text-lg sidebar-icon {{ request()->routeIs('admin.tool-categories.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                                 <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Catégories d\'outils') }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.tool-types.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.tool-types.*') ? 'active' : '' }}">
+                                <i class="fas fa-layer-group text-lg sidebar-icon {{ request()->routeIs('admin.tool-types.*') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Types d\'outils') }}</span>
                             </a>
                         </li>
                         <li>

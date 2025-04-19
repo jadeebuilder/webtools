@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\FaqCategory;
 use App\Models\FaqCategoryTranslation;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Support\Str;
 
 class MigrateFaqCategoriesToTranslation extends Command
@@ -32,7 +32,7 @@ class MigrateFaqCategoriesToTranslation extends Command
         $this->info('Début de la migration des catégories FAQ vers le système de traduction...');
         
         // Récupérer la langue par défaut
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
         
         if (!$defaultLanguage) {
             $this->error('Aucune langue par défaut trouvée. Veuillez configurer une langue par défaut avant de continuer.');

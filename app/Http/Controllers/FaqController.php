@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Faq;
 use App\Models\FaqCategory;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Http\Request;
 
 class FaqController extends Controller
@@ -15,7 +15,7 @@ class FaqController extends Controller
     public function index()
     {
         $locale = app()->getLocale();
-        $language = Language::where('code', $locale)->first();
+        $language = SiteLanguage::where('code', $locale)->first();
         
         $faqs = Faq::with(['category', 'translations' => function($query) use ($language) {
                     if ($language) {
@@ -49,7 +49,7 @@ class FaqController extends Controller
     public function category($slug)
     {
         $locale = app()->getLocale();
-        $language = Language::where('code', $locale)->first();
+        $language = SiteLanguage::where('code', $locale)->first();
         
         // Vérifier si le slug est au format 'category-ID'
         if (preg_match('/^category-(\d+)$/', $slug, $matches)) {

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FaqCategory;
 use App\Models\FaqCategoryTranslation;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -30,7 +30,7 @@ class FaqCategoryController extends Controller
      */
     public function create(): View
     {
-        $languages = Language::getActive();
+        $languages = SiteLanguage::getActive();
         return view('admin.faq_categories.create', compact('languages'));
     }
 
@@ -39,7 +39,7 @@ class FaqCategoryController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
 
         $request->validate([
             'translations.' . $defaultLanguage->id . '.name' => 'required|string|max:255',
@@ -50,7 +50,7 @@ class FaqCategoryController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
-        $languages = Language::getActive();
+        $languages = SiteLanguage::getActive();
         
         foreach ($languages as $language) {
             if (isset($request->translations[$language->id])) {
@@ -78,7 +78,7 @@ class FaqCategoryController extends Controller
      */
     public function edit(FaqCategory $faqCategory): View
     {
-        $languages = Language::getActive();
+        $languages = SiteLanguage::getActive();
         $translations = $faqCategory->translations->keyBy('language_id');
         
         return view('admin.faq_categories.edit', compact('faqCategory', 'languages', 'translations'));
@@ -89,7 +89,7 @@ class FaqCategoryController extends Controller
      */
     public function update(Request $request, FaqCategory $faqCategory): RedirectResponse
     {
-        $defaultLanguage = Language::getDefault();
+        $defaultLanguage = SiteLanguage::getDefault();
 
         $request->validate([
             'translations.' . $defaultLanguage->id . '.name' => 'required|string|max:255',
@@ -100,7 +100,7 @@ class FaqCategoryController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
-        $languages = Language::getActive();
+        $languages = SiteLanguage::getActive();
         
         foreach ($languages as $language) {
             if (isset($request->translations[$language->id])) {

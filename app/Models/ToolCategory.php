@@ -75,7 +75,7 @@ class ToolCategory extends Model
         }
         
         // Fallback à la langue par défaut si la traduction n'existe pas
-        $defaultLocale = Language::where('is_default', true)->first()->code ?? 'fr';
+        $defaultLocale = SiteLanguage::where('is_default', true)->first()->code ?? 'fr';
         $defaultTranslation = $this->getTranslation($defaultLocale);
         
         return $defaultTranslation ? $defaultTranslation->name : $this->slug;
@@ -97,7 +97,7 @@ class ToolCategory extends Model
         }
         
         // Fallback à la langue par défaut si la traduction n'existe pas
-        $defaultLocale = Language::where('is_default', true)->first()->code ?? 'fr';
+        $defaultLocale = SiteLanguage::where('is_default', true)->first()->code ?? 'fr';
         $defaultTranslation = $this->getTranslation($defaultLocale);
         
         return $defaultTranslation ? $defaultTranslation->description : null;
@@ -124,7 +124,7 @@ class ToolCategory extends Model
         }
         
         // Fallback à la langue par défaut si la traduction n'existe pas
-        $defaultLocale = Language::where('is_default', true)->first()->code ?? 'fr';
+        $defaultLocale = SiteLanguage::where('is_default', true)->first()->code ?? 'fr';
         $defaultTranslation = $this->getTranslation($defaultLocale);
         
         // Utiliser le meta_title ou le nom de la traduction par défaut, ou le slug en dernier recours
@@ -156,7 +156,7 @@ class ToolCategory extends Model
         }
         
         // Fallback à la langue par défaut si la traduction n'existe pas
-        $defaultLocale = Language::where('is_default', true)->first()->code ?? 'fr';
+        $defaultLocale = SiteLanguage::where('is_default', true)->first()->code ?? 'fr';
         $defaultTranslation = $this->getTranslation($defaultLocale);
         
         // Utiliser la meta_description ou la description de la traduction par défaut

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Faq;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -73,7 +73,7 @@ class HomeController extends Controller
 
         // Récupération des FAQs pour la page d'accueil
         $locale = app()->getLocale();
-        $language = Language::where('code', $locale)->first();
+        $language = SiteLanguage::where('code', $locale)->first();
         
         $faqs = Faq::with(['translations' => function($query) use ($language) {
                 if ($language) {

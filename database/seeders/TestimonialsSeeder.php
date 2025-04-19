@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Testimonial;
 use App\Models\TestimonialTranslation;
-use App\Models\Language;
+use App\Models\SiteLanguage;
 
 class TestimonialsSeeder extends Seeder
 {
@@ -15,9 +15,9 @@ class TestimonialsSeeder extends Seeder
     public function run(): void
     {
         // Récupérer les langues
-        $frenchLanguage = Language::where('code', 'fr')->first();
-        $englishLanguage = Language::where('code', 'en')->first();
-        $spanishLanguage = Language::where('code', 'es')->first();
+        $frenchLanguage = SiteLanguage::where('code', 'fr')->first();
+        $englishLanguage = SiteLanguage::where('code', 'en')->first();
+        $spanishLanguage = SiteLanguage::where('code', 'es')->first();
 
         if (!$frenchLanguage || !$englishLanguage || !$spanishLanguage) {
             $this->command->error('Les langues nécessaires ne sont pas disponibles dans la base de données.');

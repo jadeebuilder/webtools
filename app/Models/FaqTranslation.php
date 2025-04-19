@@ -41,6 +41,6 @@ class FaqTranslation extends Model
      */
     public function language()
     {
-        return $this->belongsTo(Language::class);
+        return $this->belongsTo(SiteLanguage::class, 'language_id');
     }
 } 

@@ -73,6 +73,21 @@
                             </div>
                         </div>
                         
+                        <div class="mb-4">
+                            <label for="default_currency" class="block text-sm font-medium text-gray-700 mb-1">{{ __('Devise par défaut') }} <span class="text-red-500">*</span></label>
+                            <select name="default_currency" id="default_currency" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50">
+                                @foreach($currencies as $currency)
+                                    <option value="{{ $currency->id }}" {{ (isset($settings['default_currency']) && $settings['default_currency'] == $currency->id) ? 'selected' : '' }}>
+                                        {{ $currency->name }} ({{ $currency->code }} - {{ $currency->symbol }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">{{ __('Cette devise sera utilisée par défaut sur tout le site.') }}</p>
+                            @error('default_currency')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="tools_per_page" class="block text-sm font-medium text-gray-700 mb-1">{{ __('Outils par page') }} <span class="text-red-500">*</span></label>

@@ -43,6 +43,6 @@ class TestimonialTranslation extends Model
      */
     public function language(): BelongsTo
     {
-        return $this->belongsTo(Language::class);
+        return $this->belongsTo(SiteLanguage::class, 'language_id');
     }
 } 

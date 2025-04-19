@@ -77,7 +77,7 @@
                             
                             <!-- Prix mensuel -->
                             <div>
-                                <label for="monthly_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Prix mensuel (€)') }} <span class="text-red-500">*</span></label>
+                                <label for="monthly_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Prix mensuel') }} ({{ \App\Models\Currency::getDefault()->symbol }}) <span class="text-red-500">*</span></label>
                                 <input type="number" name="monthly_price" id="monthly_price" value="{{ old('monthly_price', 0) }}" min="0" step="0.01" required
                                     class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
                                 @error('monthly_price')
@@ -88,7 +88,7 @@
                             
                             <!-- Prix annuel -->
                             <div>
-                                <label for="annual_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Prix annuel (€)') }} <span class="text-red-500">*</span></label>
+                                <label for="annual_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Prix annuel') }} ({{ \App\Models\Currency::getDefault()->symbol }}) <span class="text-red-500">*</span></label>
                                 <input type="number" name="annual_price" id="annual_price" value="{{ old('annual_price', 0) }}" min="0" step="0.01" required
                                     class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
                                 @error('annual_price')
@@ -99,13 +99,74 @@
                             
                             <!-- Prix à vie -->
                             <div>
-                                <label for="lifetime_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Prix à vie (€)') }} <span class="text-red-500">*</span></label>
+                                <label for="lifetime_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Prix à vie') }} ({{ \App\Models\Currency::getDefault()->symbol }}) <span class="text-red-500">*</span></label>
                                 <input type="number" name="lifetime_price" id="lifetime_price" value="{{ old('lifetime_price', 0) }}" min="0" step="0.01" required
                                     class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
                                 @error('lifetime_price')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                                 @enderror
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Prix pour un abonnement à vie (0 pour non disponible)') }}</p>
+                            </div>
+                            
+                            <!-- Période d'essai -->
+                            <div class="col-span-1 md:col-span-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-2">
+                                <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Période d\'essai') }}</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <!-- Activer la période d'essai -->
+                                    <div class="flex items-center">
+                                        <input type="checkbox" name="has_trial" id="has_trial" value="1" {{ old('has_trial') ? 'checked' : '' }}
+                                            class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                        <label for="has_trial" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                            {{ __('Activer la période d\'essai') }}
+                                        </label>
+                                        @error('has_trial')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <!-- Durée de la période d'essai -->
+                                    <div>
+                                        <label for="trial_days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Durée (jours)') }}</label>
+                                        <input type="number" name="trial_days" id="trial_days" value="{{ old('trial_days', 0) }}" min="0"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                        @error('trial_days')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                                        @enderror
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Nombre de jours d\'essai gratuit') }}</p>
+                                    </div>
+                                    
+                                    <!-- Restrictions de la période d'essai -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Restrictions') }}</label>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center">
+                                                <input type="checkbox" name="trial_restrictions[]" id="trial_restriction_downloads" value="downloads" {{ in_array('downloads', old('trial_restrictions', [])) ? 'checked' : '' }}
+                                                    class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                                <label for="trial_restriction_downloads" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                                    {{ __('Limiter les téléchargements') }}
+                                                </label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" name="trial_restrictions[]" id="trial_restriction_exports" value="exports" {{ in_array('exports', old('trial_restrictions', [])) ? 'checked' : '' }}
+                                                    class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                                <label for="trial_restriction_exports" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                                    {{ __('Limiter les exports') }}
+                                                </label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" name="trial_restrictions[]" id="trial_restriction_ai" value="ai" {{ in_array('ai', old('trial_restrictions', [])) ? 'checked' : '' }}
+                                                    class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                                <label for="trial_restriction_ai" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                                    {{ __('Limiter les outils AI') }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @error('trial_restrictions')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                             
                             <!-- Ordre d'affichage -->
@@ -121,6 +182,66 @@
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                            <!-- Types d'outils et catégories -->
+                            <div class="col-span-1 md:col-span-3 border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
+                                <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Catégories et types d\'outils') }}</h3>
+                                
+                                <!-- Catégories d'outils -->
+                                <div class="mb-6">
+                                    <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">{{ __('Catégories d\'outils disponibles') }}</h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                        @foreach($toolCategories as $category)
+                                            <div class="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750">
+                                                <input type="checkbox" name="tool_categories[]" id="category_{{ $category->id }}" value="{{ $category->id }}"
+                                                    class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                                <label for="category_{{ $category->id }}" class="flex items-center cursor-pointer">
+                                                    @if($category->icon)
+                                                        <i class="{{ $category->icon }} mr-2 text-gray-500 dark:text-gray-400"></i>
+                                                    @endif
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ $category->getName() }}</span>
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ __('Sélectionnez les catégories d\'outils que les utilisateurs pourront utiliser avec ce package') }}</p>
+                                </div>
+                                
+                                <!-- Types d'outils avec limites -->
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">{{ __('Types d\'outils et limitations') }}</h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        @foreach($toolTypes as $type)
+                                            <div class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750" style="border-left: 4px solid {{ $type->color }}">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        @if($type->icon)
+                                                            <i class="{{ $type->icon }} mr-2" style="color: {{ $type->color }}"></i>
+                                                        @endif
+                                                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ $type->getName() }}</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <label class="relative inline-flex items-center cursor-pointer">
+                                                            <input type="checkbox" name="tool_types[]" id="type_{{ $type->id }}" value="{{ $type->id }}" class="sr-only peer">
+                                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-3">
+                                                    <label for="tool_type_{{ $type->id }}_limit" class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('Limite d\'outils') }}</label>
+                                                    <div class="flex items-center">
+                                                        <input type="number" name="tool_type_limits[{{ $type->id }}]" id="tool_type_{{ $type->id }}_limit" min="0" value="0"
+                                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                                    </div>
+                                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('0 = illimité') }}</p>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ __('Configurez les types d\'outils disponibles et leurs limitations pour ce package') }}</p>
+                                </div>
+                            </div>
+                            
                             <!-- Afficher les publicités -->
                             <div class="flex items-center">
                                 <input type="checkbox" name="show_ads" id="show_ads" value="1" {{ old('show_ads', true) ? 'checked' : '' }}
@@ -147,7 +268,7 @@
                             
                             <!-- Package par défaut -->
                             <div class="flex items-center">
-                                <input type="checkbox" name="is_default" id="is_default" value="1" {{ old('is_default') ? 'checked' : '' }}
+                                <input type="checkbox" name="is_default" id="is_default" value="1" {{ old('is_default', false) ? 'checked' : '' }}
                                     class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
                                 <label for="is_default" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                                     {{ __('Package par défaut') }}
