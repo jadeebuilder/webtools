@@ -207,49 +207,77 @@
                 </li>
                 
                 <!-- Paiements et abonnements -->
-                <li x-data="{ paymentsOpen: false }">
+                <li x-data="{ paymentsOpen: {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.packages.*') ? 'true' : 'false' }} }" x-init="paymentsOpen = {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.packages.*') ? 'true' : 'false' }}">
                     <button @click="paymentsOpen = !paymentsOpen" 
-                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700">
+                            class="sidebar-item w-full flex items-center justify-between p-3 rounded-lg text-gray-700 {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.packages.*') ? 'active' : '' }}">
                         <div class="flex items-center">
-                            <i class="fas fa-credit-card text-xl sidebar-icon text-gray-500"></i>
+                            <i class="fas fa-credit-card text-xl sidebar-icon {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.packages.*') ? 'text-primary' : 'text-gray-500' }}"></i>
                             <span class="ml-3" x-show="open">{{ __('Paiements') }}</span>
                         </div>
                         <i class="fas" :class="paymentsOpen ? 'fa-chevron-down' : 'fa-chevron-right'" x-show="open"></i>
                     </button>
                     <ul x-show="paymentsOpen" class="mt-1 ml-6 space-y-1">
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-cogs text-lg sidebar-icon text-gray-500"></i>
-                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Paramètres paiements') }}</span>
+                            <a href="{{ route('admin.packages.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.packages.index') ? 'active' : '' }}">
+                                <i class="fas fa-box text-lg sidebar-icon {{ request()->routeIs('admin.packages.index') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Packages & plans') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-money-check-alt text-lg sidebar-icon text-gray-500"></i>
-                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Processeurs de paiement') }}</span>
+                            <a href="{{ route('admin.packages.create', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.packages.create') ? 'active' : '' }}">
+                                <i class="fas fa-plus-circle text-lg sidebar-icon {{ request()->routeIs('admin.packages.create') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Nouveau package') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-crown text-lg sidebar-icon text-gray-500"></i>
-                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Plans & packages') }}</span>
+                            <a href="{{ route('admin.payments.package-prices.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.payments.package-prices.*') || request()->routeIs('admin.packages.configuration') ? 'active' : '' }}">
+                                <i class="fas fa-tags text-lg sidebar-icon {{ request()->routeIs('admin.payments.package-prices.*') || request()->routeIs('admin.packages.configuration') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Prix des packages') }}</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" 
-                               class="sidebar-item flex items-center p-2 rounded-lg">
-                                <i class="fas fa-history text-lg sidebar-icon text-gray-500"></i>
-                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Historique transactions') }}</span>
+                            <a href="{{ route('admin.payments.methods.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.payments.methods.*') ? 'active' : '' }}">
+                                <i class="fas fa-money-bill-wave text-lg sidebar-icon {{ request()->routeIs('admin.payments.methods.*') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Méthodes de paiement') }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.payments.currencies.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.payments.currencies.*') ? 'active' : '' }}">
+                                <i class="fas fa-euro-sign text-lg sidebar-icon {{ request()->routeIs('admin.payments.currencies.*') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Devises') }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.payments.transactions.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.payments.transactions.*') ? 'active' : '' }}">
+                                <i class="fas fa-receipt text-lg sidebar-icon {{ request()->routeIs('admin.payments.transactions.*') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Transactions') }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.payments.subscriptions.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.payments.subscriptions.*') ? 'active' : '' }}">
+                                <i class="fas fa-sync text-lg sidebar-icon {{ request()->routeIs('admin.payments.subscriptions.*') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Abonnements') }}</span>
                             </a>
                         </li>
                         <li>
                             <a href="#" 
                                class="sidebar-item flex items-center p-2 rounded-lg">
                                 <i class="fas fa-handshake text-lg sidebar-icon text-gray-500"></i>
-                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Système d\'affiliation') }}</span>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Affiliations') }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.payments.settings.index', ['locale' => app()->getLocale()]) }}" 
+                               class="sidebar-item flex items-center p-2 rounded-lg {{ request()->routeIs('admin.payments.settings.*') ? 'active' : '' }}">
+                                <i class="fas fa-cogs text-lg sidebar-icon {{ request()->routeIs('admin.payments.settings.*') ? 'text-primary' : 'text-gray-500' }}"></i>
+                                <span class="ml-3 text-gray-700 text-sm" x-show="open">{{ __('Paramètres paiement') }}</span>
                             </a>
                         </li>
                     </ul>

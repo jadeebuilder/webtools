@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Setting;
 
 class Currency extends Model
@@ -52,6 +53,28 @@ class Currency extends Model
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
+    }
+    
+    /**
+     * Les méthodes de paiement associées à cette devise.
+     *
+     * @return BelongsToMany
+     */
+    public function paymentMethods(): BelongsToMany
+    {
+        return $this->belongsToMany(PaymentMethod::class, 'currency_payment_method')
+            ->withPivot('is_active', 'settings', 'display_order')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Relation avec les prix des packages.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function packagePrices()
+    {
+        return $this->hasMany(PackagePrice::class);
     }
     
     /**

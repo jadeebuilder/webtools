@@ -97,12 +97,37 @@ CREATE TABLE `currencies` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `precision` tinyint NOT NULL DEFAULT '2',
+  `symbol_position` enum('before','after') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'before',
+  `display_order` int unsigned NOT NULL DEFAULT '1',
   `symbol` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `symbol_native` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `symbol_first` tinyint NOT NULL DEFAULT '1',
   `decimal_mark` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '.',
   `thousands_separator` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ',',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `currency_payment_method`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `currency_payment_method` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `currency_id` bigint unsigned NOT NULL,
+  `payment_method_id` bigint unsigned NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `settings` json DEFAULT NULL,
+  `display_order` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `currency_payment_method_currency_id_payment_method_id_unique` (`currency_id`,`payment_method_id`),
+  KEY `currency_payment_method_payment_method_id_foreign` (`payment_method_id`),
+  CONSTRAINT `currency_payment_method_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `currency_payment_method_payment_method_id_foreign` FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `failed_jobs`;
@@ -150,8 +175,7 @@ CREATE TABLE `faq_category_translations` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `faq_cat_trans_unique` (`faq_category_id`,`language_id`),
   KEY `faq_category_translations_language_id_foreign` (`language_id`),
-  CONSTRAINT `faq_category_translations_faq_category_id_foreign` FOREIGN KEY (`faq_category_id`) REFERENCES `faq_categories` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `faq_category_translations_language_id_foreign` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE CASCADE
+  CONSTRAINT `faq_category_translations_faq_category_id_foreign` FOREIGN KEY (`faq_category_id`) REFERENCES `faq_categories` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `faq_translations`;
@@ -166,8 +190,7 @@ CREATE TABLE `faq_translations` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `faq_trans_unique` (`faq_id`,`language_id`),
   KEY `faq_translations_language_id_foreign` (`language_id`),
-  CONSTRAINT `faq_translations_faq_id_foreign` FOREIGN KEY (`faq_id`) REFERENCES `faqs` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `faq_translations_language_id_foreign` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE CASCADE
+  CONSTRAINT `faq_translations_faq_id_foreign` FOREIGN KEY (`faq_id`) REFERENCES `faqs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `faqs`;
@@ -192,16 +215,11 @@ DROP TABLE IF EXISTS `languages`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `languages` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `code` char(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `flag` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `is_default` tinyint(1) NOT NULL DEFAULT '0',
-  `is_rtl` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `languages_code_unique` (`code`)
+  `name_native` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dir` char(3) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `migrations`;
@@ -212,6 +230,26 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `package_prices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `package_prices` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `package_id` bigint unsigned NOT NULL,
+  `currency_id` bigint unsigned NOT NULL,
+  `monthly_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `annual_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `lifetime_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `payment_provider_ids` json DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `package_prices_package_id_currency_id_unique` (`package_id`,`currency_id`),
+  KEY `package_prices_currency_id_foreign` (`currency_id`),
+  CONSTRAINT `package_prices_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `package_prices_package_id_foreign` FOREIGN KEY (`package_id`) REFERENCES `packages` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `package_tool_types`;
@@ -301,6 +339,25 @@ CREATE TABLE `password_reset_tokens` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `payment_methods`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `payment_methods` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `settings` json DEFAULT NULL,
+  `processor_class` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `icon` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `display_order` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `payment_methods_code_unique` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `personal_access_tokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -379,10 +436,15 @@ DROP TABLE IF EXISTS `site_languages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `site_languages` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `flag` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_default` tinyint(1) NOT NULL DEFAULT '0',
+  `is_rtl` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `states`;
@@ -402,22 +464,28 @@ DROP TABLE IF EXISTS `subscriptions`;
 CREATE TABLE `subscriptions` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
-  `plan_id` bigint unsigned NOT NULL,
-  `processor` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `processor_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `package_id` bigint unsigned NOT NULL,
+  `currency_id` bigint unsigned DEFAULT NULL,
+  `payment_provider` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subscription_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `frequency` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cycle` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `amount` decimal(10,2) NOT NULL,
-  `starts_at` timestamp NOT NULL,
   `ends_at` timestamp NULL DEFAULT NULL,
   `trial_ends_at` timestamp NULL DEFAULT NULL,
-  `auto_renew` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `payment_method` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `next_billing_date` timestamp NULL DEFAULT NULL,
+  `cancelled_at` timestamp NULL DEFAULT NULL,
+  `meta` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `subscriptions_user_id_foreign` (`user_id`),
-  KEY `subscriptions_plan_id_foreign` (`plan_id`),
-  CONSTRAINT `subscriptions_plan_id_foreign` FOREIGN KEY (`plan_id`) REFERENCES `plans` (`id`) ON DELETE CASCADE,
+  KEY `subscriptions_currency_id_foreign` (`currency_id`),
+  KEY `subscriptions_package_id_foreign` (`package_id`),
+  CONSTRAINT `subscriptions_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
+  CONSTRAINT `subscriptions_package_id_foreign` FOREIGN KEY (`package_id`) REFERENCES `packages` (`id`) ON DELETE CASCADE,
   CONSTRAINT `subscriptions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -434,7 +502,6 @@ CREATE TABLE `testimonial_translations` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `testimonial_trans_unique` (`testimonial_id`,`language_id`),
   KEY `testimonial_translations_language_id_foreign` (`language_id`),
-  CONSTRAINT `testimonial_translations_language_id_foreign` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE CASCADE,
   CONSTRAINT `testimonial_translations_testimonial_id_foreign` FOREIGN KEY (`testimonial_id`) REFERENCES `testimonials` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -636,6 +703,38 @@ CREATE TABLE `tools` (
   CONSTRAINT `tools_tool_category_id_foreign` FOREIGN KEY (`tool_category_id`) REFERENCES `tool_categories` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `transactions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `subscription_id` bigint unsigned DEFAULT NULL,
+  `currency_id` bigint unsigned NOT NULL,
+  `payment_method_id` bigint unsigned NOT NULL,
+  `reference_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `provider_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider_reference` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `paid_at` timestamp NULL DEFAULT NULL,
+  `metadata` json DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `transactions_reference_id_unique` (`reference_id`),
+  KEY `transactions_currency_id_foreign` (`currency_id`),
+  KEY `transactions_payment_method_id_foreign` (`payment_method_id`),
+  KEY `transactions_user_id_status_index` (`user_id`,`status`),
+  KEY `transactions_subscription_id_index` (`subscription_id`),
+  KEY `transactions_reference_id_index` (`reference_id`),
+  CONSTRAINT `transactions_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
+  CONSTRAINT `transactions_payment_method_id_foreign` FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`id`),
+  CONSTRAINT `transactions_subscription_id_foreign` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `transactions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -707,4 +806,19 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (55,'2020_07_07_055
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (56,'2021_10_19_071730_create_states_table',15);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (57,'2021_10_23_082414_create_currencies_table',15);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (58,'2025_04_19_130317_rename_languages_table_to_site_languages',16);
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (59,'2025_04_19_132336_create_site_languages_table',17);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (60,'2025_04_19_132336_create_site_languages_table',17);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (61,'2025_04_19_133732_update_foreign_keys_to_site_languages',18);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (62,'2025_04_19_133946_remove_languages_foreign_keys',19);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (63,'2023_07_25_remove_languages_constraints',20);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (64,'2022_01_22_034939_create_languages_table',21);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (65,'2023_11_01_000001_create_payment_methods_table',22);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (66,'2023_11_01_000002_create_currency_payment_method_table',22);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (67,'2023_11_01_000003_create_package_prices_table',22);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (68,'2023_11_01_000004_create_transactions_table',22);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (69,'2023_11_01_000005_update_subscriptions_table',22);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (70,'2025_04_19_163330_add_fields_to_currencies_table',23);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (71,'2025_04_19_163429_add_timestamps_to_currencies_table',24);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (73,'2025_04_19_222502_rename_plan_id_to_package_id_in_subscriptions',25);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (74,'2025_04_19_222824_update_subscriptions_table_fields',25);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (75,'2025_04_19_223016_add_payment_provider_to_subscriptions_table',25);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (76,'2025_04_19_225500_rename_expires_at_to_ends_at',26);

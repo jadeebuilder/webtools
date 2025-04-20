@@ -25,6 +25,8 @@ use App\Http\Controllers\DiagnosticController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeFaqController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\TrialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -220,6 +222,46 @@ Route::prefix('{locale}')
             Route::get('settings/maintenance-template', function() {
                 return response()->download(resource_path('views/errors/maintenance.blade.php'));
             })->name('settings.maintenance-template');
+
+            // Gestion des paiements
+            Route::prefix('payments')->name('payments.')->group(function () {
+                // Gestion des devises
+                Route::resource('currencies', App\Http\Controllers\Admin\CurrencyController::class);
+                Route::put('currencies/{currency}/toggle', [App\Http\Controllers\Admin\CurrencyController::class, 'toggleStatus'])->name('currencies.toggle');
+                Route::put('currencies/{currency}/set-default', [App\Http\Controllers\Admin\CurrencyController::class, 'setDefault'])->name('currencies.set-default');
+                
+                // Méthodes de paiement
+                Route::resource('methods', App\Http\Controllers\Admin\PaymentMethodController::class);
+                Route::put('methods/{method}/toggle', [App\Http\Controllers\Admin\PaymentMethodController::class, 'toggleStatus'])->name('methods.toggle');
+                Route::get('methods/{method}/currencies', [App\Http\Controllers\Admin\PaymentMethodController::class, 'currencies'])->name('methods.currencies');
+                Route::put('methods/{method}/currencies', [App\Http\Controllers\Admin\PaymentMethodController::class, 'updateCurrencies'])->name('methods.currencies.update');
+                
+                // Transactions
+                Route::get('transactions', [App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('transactions.index');
+                Route::get('transactions/export', [App\Http\Controllers\Admin\TransactionController::class, 'export'])->name('transactions.export');
+                Route::get('transactions/{transaction}', [App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('transactions.show');
+                Route::post('transactions/{transaction}/mark-as-refunded', [App\Http\Controllers\Admin\TransactionController::class, 'markAsRefunded'])->name('transactions.mark-as-refunded');
+                
+                // Abonnements
+                Route::get('subscriptions', [App\Http\Controllers\Admin\SubscriptionController::class, 'index'])->name('subscriptions.index');
+                Route::get('subscriptions/{subscription}', [App\Http\Controllers\Admin\SubscriptionController::class, 'show'])->name('subscriptions.show');
+                
+                // Prix des packages
+                Route::get('package-prices', [App\Http\Controllers\Admin\PackagePriceController::class, 'index'])->name('package-prices.index');
+                Route::get('package-prices/edit', [App\Http\Controllers\Admin\PackagePriceController::class, 'edit'])->name('package-prices.edit');
+                Route::post('package-prices/update', [App\Http\Controllers\Admin\PackagePriceController::class, 'update'])->name('package-prices.update');
+                
+                // Configuration générale des paiements
+                Route::get('settings', [App\Http\Controllers\Admin\PaymentSettingController::class, 'index'])->name('settings.index');
+                Route::post('settings', [App\Http\Controllers\Admin\PaymentSettingController::class, 'update'])->name('settings.update');
+
+                // Paramètres de paiement
+                Route::get('settings', [App\Http\Controllers\Admin\PaymentSettingController::class, 'index'])->name('settings.index');
+                Route::put('settings/general', [App\Http\Controllers\Admin\PaymentSettingController::class, 'updateGeneral'])->name('settings.update-general');
+                Route::patch('settings/payment-methods/{id}/toggle', [App\Http\Controllers\Admin\PaymentSettingController::class, 'togglePaymentMethod'])->name('settings.toggle-payment-method');
+                Route::put('settings/payment-methods/{id}', [App\Http\Controllers\Admin\PaymentSettingController::class, 'updatePaymentMethod'])->name('settings.update-payment-method');
+                Route::put('settings/payment-methods/{id}/currencies', [App\Http\Controllers\Admin\PaymentSettingController::class, 'updatePaymentMethodCurrencies'])->name('settings.update-payment-method-currencies');
+            });
         });
 
         // Newsletter subscription
@@ -292,6 +334,28 @@ Route::prefix('{locale}')
 
         // Packages
         Route::get('packages', [App\Http\Controllers\PackageController::class, 'index'])->name('packages');
+
+        // Routes liées au paiement
+        Route::middleware(['auth'])->group(function() {
+            // Parcours de paiement
+            Route::get('packages', [PaymentController::class, 'packages'])->name('packages');
+            Route::get('checkout/{slug}', [PaymentController::class, 'checkout'])->name('checkout');
+            Route::post('checkout/currency-cycle', [PaymentController::class, 'selectCurrencyAndCycle'])->name('checkout.currency-cycle');
+            Route::get('payment/methods', [PaymentController::class, 'paymentMethods'])->name('payment.methods');
+            Route::post('payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
+            Route::get('payment/success/{provider}', [PaymentController::class, 'success'])->name('payment.success');
+            Route::get('payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+        });
+
+        // Webhooks (pas besoin de préfixe de langue)
+        Route::post('webhooks/payment/{provider}', [PaymentController::class, 'webhook'])
+            ->name('payment.webhook')
+            ->middleware('api')
+            ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+        // Routes pour les périodes d'essai
+        Route::get('/trial/{slug}/{cycle?}', [TrialController::class, 'start'])->name('trial.start');
+        Route::post('/trial/{slug}/activate', [TrialController::class, 'activate'])->name('trial.activate');
     });
 
 // Authentification (routes sans préfixe de langue)

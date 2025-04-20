@@ -46,7 +46,7 @@ class PackageController extends Controller
      */
     public function create()
     {
-        $languages = Language::where('is_active', true)->get();
+        $languages = SiteLanguage::where('is_active', true)->get();
         $toolCategories = ToolCategory::with('tools')->where('is_active', true)->orderBy('order')->get();
         $toolTypes = ToolType::where('is_active', true)->orderBy('order')->get();
         $cycleTypes = [

@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use App\Services\PaymentFactory;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Enregistrer la factory de paiement
+        $this->app->singleton(PaymentFactory::class, function ($app) {
+            return new PaymentFactory();
+        });
     }
 
     /**

@@ -439,4 +439,47 @@ class Package extends Model
             'formatted' => Currency::formatDefault($savings, false)
         ];
     }
+
+    /**
+     * Scope pour filtrer uniquement les packages actifs.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Obtenir les prix associés à ce package.
+     */
+    public function prices()
+    {
+        return $this->hasMany(PackagePrice::class);
+    }
+
+    /**
+     * Obtenir le prix pour un cycle et une devise spécifiques.
+     *
+     * @param string $cycle
+     * @param int|null $currencyId
+     * @return PackagePrice|null
+     */
+    public function getPrice(string $cycle, ?int $currencyId = null)
+    {
+        $query = $this->prices();
+        
+        if ($currencyId) {
+            $query->where('currency_id', $currencyId);
+        } else {
+            // Utiliser la devise par défaut
+            $defaultCurrency = Currency::where('code', config('app.default_currency', 'USD'))->first();
+            if ($defaultCurrency) {
+                $query->where('currency_id', $defaultCurrency->id);
+            }
+        }
+        
+        return $query->where('cycle', $cycle)->first();
+    }
 } 

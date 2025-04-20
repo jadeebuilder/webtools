@@ -33,5 +33,8 @@ class DatabaseSeeder extends Seeder
             PackageSeeder::class,
             ToolTypeSeeder::class,
         ]);
+
+        // Seeder du système de paiement
+        $this->call(PaymentSystemSeeder::class);
     }
 }

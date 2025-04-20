@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+IMPORTANT - Routes multilingues et paramètre locale :
+
+Toutes les routes de l'application nécessitent un paramètre 'locale' car l'application est multilingue. 
+
+Règles à suivre systématiquement :
+1. Lors de la génération d'URL via route(), TOUJOURS inclure le paramètre 'locale' :
+   route('nom.route', ['locale' => app()->getLocale(), 'autres' => 'paramètres']) 
+
+2. Dans les contrôleurs, le paramètre 'locale' doit TOUJOURS être en première position :
+   public function maMethode(string $locale, $autresParametres)
+
+3. Dans les redirections, toujours inclure le paramètre 'locale' :
+   return redirect()->route('nom.route', ['locale' => $locale]);
+
+4. Pour les routes API qui n'utilisent pas les noms de route, utiliser :
+   $localePrefix = app()->getLocale();
+   "/api/{$localePrefix}/endpoint"
+
+5. Ne jamais coder en dur une valeur de langue, toujours utiliser app()->getLocale()
+
+Attention : l'absence du paramètre 'locale' provoquera des erreurs du type 
+"Missing required parameter for [Route: xxx] [URI: {locale}/xxx] [Missing parameter: locale]"

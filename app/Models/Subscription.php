@@ -5,59 +5,51 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class Subscription extends Model
 {
     use HasFactory;
 
     /**
-     * Les constantes des statuts d'abonnement.
-     */
-    const STATUS_ACTIVE = 'active';
-    const STATUS_CANCELLED = 'cancelled';
-    const STATUS_EXPIRED = 'expired';
-
-    /**
-     * Les constantes des fréquences d'abonnement.
-     */
-    const FREQUENCY_MONTHLY = 'monthly';
-    const FREQUENCY_ANNUAL = 'annual';
-    const FREQUENCY_LIFETIME = 'lifetime';
-
-    /**
-     * Les attributs qui sont assignables en masse.
+     * Les attributs qui sont mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
         'user_id',
-        'plan_id',
-        'processor',
-        'processor_id',
+        'package_id',
         'status',
-        'frequency',
+        'payment_provider',
+        'payment_method',
+        'subscription_id',
+        'cycle',
+        'quantity',
+        'currency_id',
         'amount',
-        'starts_at',
-        'ends_at',
+        'next_billing_date',
         'trial_ends_at',
-        'auto_renew',
+        'cancelled_at',
+        'ends_at',
+        'meta',
     ];
 
     /**
-     * Les attributs qui doivent être convertis.
+     * Les attributs qui doivent être castés.
      *
      * @var array<string, string>
      */
     protected $casts = [
-        'amount' => 'decimal:2',
-        'starts_at' => 'datetime',
-        'ends_at' => 'datetime',
+        'next_billing_date' => 'datetime',
         'trial_ends_at' => 'datetime',
-        'auto_renew' => 'boolean',
+        'cancelled_at' => 'datetime',
+        'ends_at' => 'datetime',
+        'meta' => 'array',
     ];
 
     /**
-     * Obtenir l'utilisateur associé à cet abonnement.
+     * Get the user that owns the subscription.
      */
     public function user(): BelongsTo
     {
@@ -65,78 +57,119 @@ class Subscription extends Model
     }
 
     /**
-     * Obtenir le plan associé à cet abonnement.
+     * Get the package that this subscription belongs to.
      */
-    public function plan(): BelongsTo
+    public function package(): BelongsTo
     {
-        return $this->belongsTo(Plan::class);
+        return $this->belongsTo(Package::class);
     }
 
     /**
-     * Vérifier si l'abonnement est actif.
-     *
-     * @return bool
+     * Get the currency for this subscription.
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    /**
+     * Get all transactions for this subscription.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Détermine si l'abonnement est actif.
      */
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return $this->status === 'active' &&
+            ($this->ends_at === null || $this->ends_at->isFuture());
     }
 
     /**
-     * Vérifier si l'abonnement est annulé.
-     *
-     * @return bool
+     * Détermine si l'abonnement est annulé.
      */
     public function isCancelled(): bool
     {
-        return $this->status === self::STATUS_CANCELLED;
+        return $this->status === 'cancelled' || 
+            $this->cancelled_at !== null;
     }
 
     /**
-     * Vérifier si l'abonnement est expiré.
-     *
-     * @return bool
+     * Détermine si l'abonnement est expiré.
      */
     public function isExpired(): bool
     {
-        return $this->status === self::STATUS_EXPIRED;
+        return $this->status === 'expired' || 
+            ($this->ends_at !== null && $this->ends_at->isPast());
     }
 
     /**
-     * Vérifier si l'abonnement est à vie.
-     *
-     * @return bool
-     */
-    public function isLifetime(): bool
-    {
-        return $this->frequency === self::FREQUENCY_LIFETIME;
-    }
-
-    /**
-     * Vérifier si l'abonnement est en période d'essai.
-     *
-     * @return bool
+     * Détermine si l'abonnement est en période d'essai.
      */
     public function onTrial(): bool
     {
-        return $this->trial_ends_at && now()->lt($this->trial_ends_at);
+        return $this->trial_ends_at !== null && 
+            $this->trial_ends_at->isFuture();
     }
 
     /**
-     * Obtenir l'abonnement actif d'un utilisateur.
-     *
-     * @param int $userId
-     * @return self|null
+     * Obtenir le montant formaté avec le symbole de la devise.
      */
-    public static function getActiveSubscription(int $userId): ?self
+    public function getFormattedAmount(): string
     {
-        return self::where('user_id', $userId)
-            ->where('status', self::STATUS_ACTIVE)
-            ->where(function ($query) {
-                $query->where('ends_at', '>', now())
-                    ->orWhereNull('ends_at');
-            })
-            ->latest()
-            ->first();
+        if ($this->currency) {
+            return $this->currency->symbol . ' ' . number_format($this->amount, 2);
+        }
+        
+        return number_format($this->amount, 2);
+    }
+
+    /**
+     * Obtenir le statut de l'abonnement formaté.
+     */
+    public function getStatus(): string
+    {
+        // Priorité à l'état stocké
+        if ($this->status === 'active' && $this->isExpired()) {
+            return 'expired';
+        }
+        
+        if ($this->status === 'active' && $this->isCancelled()) {
+            return 'cancelled';
+        }
+        
+        return $this->status;
+    }
+
+    /**
+     * Obtenir la date de fin formatée.
+     */
+    public function getEndsAtFormatted(): string
+    {
+        return $this->ends_at ? $this->ends_at->format('d/m/Y H:i') : 'N/A';
+    }
+
+    /**
+     * Obtenir la prochaine date de facturation formatée.
+     */
+    public function getNextBillingDateFormatted(): string
+    {
+        return $this->next_billing_date ? $this->next_billing_date->format('d/m/Y') : 'N/A';
+    }
+
+    /**
+     * Obtenir le nombre de jours restants avant expiration.
+     */
+    public function getDaysRemaining(): int
+    {
+        if (!$this->ends_at) {
+            return 0;
+        }
+        
+        return max(0, Carbon::now()->diffInDays($this->ends_at, false));
     }
 }

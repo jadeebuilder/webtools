@@ -10,9 +10,14 @@
     <form method="POST" action="{{ route('login', ['locale' => app()->getLocale()]) }}">
         @csrf
 
+        <!-- Champ caché pour la redirection après connexion -->
+        @if(isset($redirectTo))
+            <input type="hidden" name="redirect_to" value="{{ $redirectTo }}">
+        @endif
+
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('Adresse email')" />
             <div class="flex">
                 <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md">
                     <i class="fas fa-envelope text-gray-500"></i>

@@ -19,6 +19,25 @@ class Kernel extends ConsoleKernel
                 \Artisan::call('sitemap:generate');
             }
         })->daily();
+
+        // Vérifier les essais expirés tous les jours à 1h du matin
+        $schedule->call(function () {
+            // Récupérer les abonnements en période d'essai expiré
+            $expiredTrials = \App\Models\Subscription::where('status', 'active')
+                ->whereNotNull('trial_ends_at')
+                ->where('trial_ends_at', '<', now())
+                ->get();
+                
+            $trialController = new \App\Http\Controllers\TrialController();
+            
+            foreach ($expiredTrials as $subscription) {
+                try {
+                    $trialController->handleExpiredTrial($subscription);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Erreur lors du traitement des essais expirés: ' . $e->getMessage());
+                }
+            }
+        })->dailyAt('01:00')->name('check-expired-trials');
     }
 
     /**
