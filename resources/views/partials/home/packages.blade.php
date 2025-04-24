@@ -175,27 +175,39 @@
                                 {{ $isFreePlan 
                                     ? route('register', ['locale' => app()->getLocale(), 'package' => $package->slug]) 
                                     : ($package->has_trial 
-                                        ? route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly']) 
+                                        ? route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly']) 
                                         : route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly'])) 
                                 }}
                             @else
                                 {{ route('login', ['locale' => app()->getLocale(), 'redirect_to' => $isFreePlan 
                                     ? route('register', ['locale' => app()->getLocale(), 'package' => $package->slug]) 
                                     : ($package->has_trial 
-                                        ? route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly']) 
+                                        ? route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly']) 
                                         : route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly'])), 'intent' => 'subscribe_'.$package->slug.'_monthly']) 
                                 }}
                             @endauth"
-                        class="w-full py-3 px-4 text-white rounded-lg transform hover:scale-105 transition-all duration-200 inline-block text-center" 
+                        class="w-full py-3 px-4 text-white rounded-lg transform hover:scale-105 transition-all duration-200 inline-block text-center mb-2" 
                         style="background-color: {{ $buttonColor }};">
                         @if($isFreePlan)
                             {{ __('Commencer gratuitement') }}
-                        @elseif($package->has_trial)
-                            {{ __('Commencer l\'essai') }} ({{ $package->getTrialText() }})
                         @else
                             {{ __('Souscrire maintenant') }}
                         @endif
                     </a>
+
+                    @if($package->has_trial && !$isFreePlan)
+                    <a 
+                        x-show="billingPeriod === 'monthly'"
+                        href="@auth
+                                {{ route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly']) }}
+                            @else
+                                {{ route('login', ['locale' => app()->getLocale(), 'redirect_to' => route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'monthly']), 'intent' => 'trial_'.$package->slug.'_monthly']) }}
+                            @endauth"
+                        class="w-full py-3 px-4 text-white rounded-lg transform hover:scale-105 transition-all duration-200 inline-block text-center" 
+                        style="background-color: {{ $buttonColor }}; opacity: 0.9;">
+                        {{ __('Commencer l\'essai') }} ({{ $package->getTrialText() }})
+                    </a>
+                    @endif
                     
                     <!-- Bouton pour le plan annuel -->
                     <a 
@@ -205,19 +217,15 @@
                                     ? route('register', ['locale' => app()->getLocale(), 'package' => $package->slug]) 
                                     : (!$hasAnnualPlan 
                                         ? '#' 
-                                        : ($package->has_trial 
-                                            ? route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual']) 
-                                            : route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual']))) 
+                                        : route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual'])) 
                                 }}
                             @else
                                 {{ !$hasAnnualPlan ? '#' : route('login', ['locale' => app()->getLocale(), 'redirect_to' => $isFreePlan 
                                     ? route('register', ['locale' => app()->getLocale(), 'package' => $package->slug]) 
-                                    : ($package->has_trial 
-                                        ? route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual']) 
-                                        : route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual'])), 'intent' => 'subscribe_'.$package->slug.'_annual']) 
+                                    : route('checkout', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual']), 'intent' => 'subscribe_'.$package->slug.'_annual']) 
                                 }}
                             @endauth"
-                        class="w-full py-3 px-4 rounded-lg transform hover:scale-105 transition-all duration-200 inline-block text-center"
+                        class="w-full py-3 px-4 rounded-lg transform hover:scale-105 transition-all duration-200 inline-block text-center mb-2"
                         :class="{ 'bg-gray-300 text-gray-600 cursor-not-allowed': {{ !$hasAnnualPlan && !$isFreePlan ? 'true' : 'false' }}, 'text-white': {{ ($hasAnnualPlan || $isFreePlan) ? 'true' : 'false' }} }"
                         style="{{ ($hasAnnualPlan || $isFreePlan) ? 'background-color: '.$buttonColor.';' : '' }}"
                         {{ !$hasAnnualPlan && !$isFreePlan ? 'onclick="event.preventDefault()"' : '' }}>
@@ -225,12 +233,24 @@
                             {{ __('Commencer gratuitement') }}
                         @elseif(!$hasAnnualPlan)
                             {{ __('Non disponible') }}
-                        @elseif($package->has_trial)
-                            {{ __('Commencer l\'essai') }} ({{ $package->getTrialText() }})
                         @else
                             {{ __('Souscrire à l\'année') }}
                         @endif
                     </a>
+
+                    @if($package->has_trial && !$isFreePlan && $hasAnnualPlan)
+                    <a 
+                        x-show="billingPeriod === 'annual'"
+                        href="@auth
+                                {{ route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual']) }}
+                            @else
+                                {{ route('login', ['locale' => app()->getLocale(), 'redirect_to' => route('trial.start', ['locale' => app()->getLocale(), 'slug' => $package->slug, 'cycle' => 'annual']), 'intent' => 'trial_'.$package->slug.'_annual']) }}
+                            @endauth"
+                        class="w-full py-3 px-4 text-white rounded-lg transform hover:scale-105 transition-all duration-200 inline-block text-center"
+                        style="background-color: {{ $buttonColor }}; opacity: 0.9;">
+                        {{ __('Commencer l\'essai') }} ({{ $package->getTrialText() }})
+                    </a>
+                    @endif
                     
                     <!-- Bouton pour le plan à vie -->
                     <a 

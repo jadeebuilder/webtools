@@ -27,6 +27,7 @@ use App\Http\Controllers\HomeFaqController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TrialController;
+use App\Http\Controllers\Admin\PaymentMethodController;
 
 /*
 |--------------------------------------------------------------------------
@@ -196,7 +197,9 @@ Route::prefix('{locale}')
             Route::put('templates/sections/{section}/toggle', [TemplateSectionController::class, 'toggle'])->name('templates.sections.toggle');
             
             // Gestion des outils
-            Route::resource('tools', AdminToolController::class);
+            Route::resource('tools', AdminToolController::class)->except(['update', 'destroy']);
+            Route::put('tools/{tool}', [AdminToolController::class, 'update'])->name('tools.update');
+            Route::delete('tools/{tool}', [AdminToolController::class, 'destroy'])->name('tools.destroy');
             Route::post('tools/generate-slug', [AdminToolController::class, 'generateSlug'])->name('tools.generate-slug');
             Route::put('tools/{tool}/toggle-status', [AdminToolController::class, 'toggleStatus'])->name('tools.toggle-status');
             
@@ -206,7 +209,7 @@ Route::prefix('{locale}')
             
             // Gestion des catégories d'outils
             Route::resource('tool-categories', ToolCategoryController::class);
-            Route::put('tool-categories/{category}/toggle-status', [ToolCategoryController::class, 'toggleStatus'])->name('tool-categories.toggle-status');
+            Route::post('tool-categories/{category}/toggle', [ToolCategoryController::class, 'toggleStatus'])->name('tool-categories.toggle');
             
             // Configuration générale
             Route::get('settings/general', [SettingController::class, 'general'])->name('settings.general');
@@ -364,5 +367,18 @@ require __DIR__ . '/auth.php';
 // Route de test pour vérifier notre helper
 Route::get('/test-helper', function () {
     return view('test-helper');
+});
+
+Route::prefix('{locale}/admin/payments/methods')->name('admin.payments.methods.')->group(function () {
+    Route::get('/', [PaymentMethodController::class, 'index'])->name('index');
+    Route::get('/create', [PaymentMethodController::class, 'create'])->name('create');
+    Route::post('/', [PaymentMethodController::class, 'store'])->name('store');
+    Route::get('/{method}', [PaymentMethodController::class, 'show'])->name('show');
+    Route::get('/{method}/edit', [PaymentMethodController::class, 'edit'])->name('edit');
+    Route::put('/{method}', [PaymentMethodController::class, 'update'])->name('update');
+    Route::delete('/{method}', [PaymentMethodController::class, 'destroy'])->name('destroy');
+    Route::get('/{method}/currencies', [PaymentMethodController::class, 'currencies'])->name('currencies');
+    Route::post('/{method}/currencies', [PaymentMethodController::class, 'updateCurrencies'])->name('updateCurrencies');
+    Route::post('/{method}/toggle-status', [PaymentMethodController::class, 'toggleStatus'])->name('toggleStatus');
 });
 

@@ -165,56 +165,41 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Soumission automatique du formulaire lors du changement de filtre
-            const filterForm = document.querySelector('form[action="{{ route('admin.tools.index', ['locale' => app()->getLocale()]) }}"]');
-            const filterInputs = filterForm.querySelectorAll('select');
-            
-            filterInputs.forEach(input => {
-                input.addEventListener('change', () => {
-                    filterForm.submit();
-                });
-            });
-            
-            // Activation/désactivation d'un outil via AJAX
             const toggleButtons = document.querySelectorAll('.toggle-status');
             
             toggleButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const url = this.dataset.url;
-                    const statusIcon = this.querySelector('i');
                     
                     fetch(url, {
-                        method: 'PUT',
+                        method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
                         }
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Mettre à jour l'icône
-                            statusIcon.classList.remove('fa-toggle-on', 'fa-toggle-off');
-                            statusIcon.classList.add(data.is_active ? 'fa-toggle-on' : 'fa-toggle-off');
+                            // Mettre à jour l'icône et le statut
+                            const icon = this.querySelector('i');
+                            icon.classList.toggle('fa-toggle-on');
+                            icon.classList.toggle('fa-toggle-off');
                             
                             // Mettre à jour le titre
-                            this.setAttribute('title', data.is_active ? '{{ __('Désactiver') }}' : '{{ __('Activer') }}');
+                            this.title = data.is_active ? '{{ __("Désactiver") }}' : '{{ __("Activer") }}';
                             
-                            // Mettre à jour la pastille de statut dans la ligne du tableau
-                            const statusBadge = this.closest('tr').querySelector('td:nth-child(4) span');
-                            statusBadge.textContent = data.is_active ? '{{ __('Actif') }}' : '{{ __('Inactif') }}';
-                            statusBadge.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + 
-                                (data.is_active 
-                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200');
-                            
-                            // Notification
-                            alert(data.message);
+                            // Mettre à jour le statut dans la colonne
+                            const statusCell = this.closest('tr').querySelector('td:nth-child(4) span');
+                            statusCell.textContent = data.is_active ? '{{ __("Actif") }}' : '{{ __("Inactif") }}';
+                            statusCell.classList.toggle('bg-green-100');
+                            statusCell.classList.toggle('text-green-800');
+                            statusCell.classList.toggle('bg-red-100');
+                            statusCell.classList.toggle('text-red-800');
                         }
                     })
                     .catch(error => {
                         console.error('Erreur:', error);
-                        alert('{{ __('Une erreur est survenue lors de la mise à jour du statut') }}');
                     });
                 });
             });

@@ -480,6 +480,9 @@ class Package extends Model
             }
         }
         
-        return $query->where('cycle', $cycle)->first();
+        // Récupérer le prix correspondant à la devise
+        $packagePrice = $query->first();
+        
+        return $packagePrice;
     }
 } 

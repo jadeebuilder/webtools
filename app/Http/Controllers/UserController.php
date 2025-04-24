@@ -69,8 +69,25 @@ class UserController extends Controller
      */
     public function account(): View
     {
+        $user = Auth::user();
+        $activeSubscription = null;
+        $package = null;
+        
+        // Récupérer l'abonnement actif de l'utilisateur
+        $subscription = $user->subscriptions()
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+            
+        if ($subscription) {
+            $activeSubscription = $subscription;
+            $package = $subscription->package;
+        }
+        
         return view('user.account', [
-            'user' => Auth::user(),
+            'user' => $user,
+            'subscription' => $activeSubscription,
+            'package' => $package,
         ]);
     }
 
@@ -89,8 +106,37 @@ class UserController extends Controller
      */
     public function packages(): View
     {
+        $user = Auth::user();
+        
+        // Récupération de l'abonnement actif de l'utilisateur
+        $activeSubscription = $user->subscriptions()
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+            
+        // Récupération de tous les packages disponibles pour upgrade
+        $availablePackages = \App\Models\Package::where('is_active', true)
+            ->orderBy('order')
+            ->get();
+            
+        // Si l'utilisateur a un abonnement actif, récupérer son package
+        $currentPackage = null;
+        if ($activeSubscription) {
+            $currentPackage = $activeSubscription->package;
+        }
+        
+        // Récupération de l'historique des transactions de l'utilisateur
+        $transactions = \App\Models\Transaction::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+        
         return view('user.packages', [
-            'user' => Auth::user(),
+            'user' => $user,
+            'subscription' => $activeSubscription,
+            'currentPackage' => $currentPackage,
+            'availablePackages' => $availablePackages,
+            'transactions' => $transactions
         ]);
     }
 

@@ -920,5 +920,36 @@
     
     "Une erreur est survenue.": "Une erreur est survenue.",
     "Date de fin": "Date de fin",
-    "Se termine le": "Se termine le"
+    "Se termine le": "Se termine le",
+    
+    "My Account": "Mon compte",
+    "Personal Information": "Informations personnelles",
+    "Account Status": "Statut du compte",
+    "Status": "Statut",
+    "Active": "Actif",
+    "Account Type": "Type de compte",
+    "Administrator": "Administrateur",
+    "Standard User": "Utilisateur standard",
+    "Edit Profile": "Modifier le profil",
+    
+    "Current Subscription": "Abonnement actuel",
+    "Package": "Forfait",
+    "Trial Period": "Période d'essai",
+    "Cycle": "Cycle",
+    "Monthly": "Mensuel",
+    "Annual": "Annuel",
+    "Lifetime": "À vie",
+    "Start Date": "Date de début",
+    "Trial End Date": "Date de fin d'essai",
+    "Expiration Date": "Date d'expiration",
+    "Time Remaining": "Temps restant",
+    "days remaining": "jours restants",
+    "Expires today": "Expire aujourd'hui",
+    "Manage Subscription": "Gérer l'abonnement",
+    "Subscription": "Abonnement",
+    "No active subscription": "Aucun abonnement actif",
+    "Explore our packages to access premium features.": "Explorez nos forfaits pour accéder aux fonctionnalités premium.",
+    "View Packages": "Voir les forfaits",
+    
+    "N/A": "N/A"
 } 
